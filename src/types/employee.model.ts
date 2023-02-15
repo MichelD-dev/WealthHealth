@@ -53,3 +53,6 @@ export const EmployeeSchema = z.discriminatedUnion('address', [
 ])
 
 export type EmployeeSchemaType = z.infer<typeof EmployeeSchema>
+export type EmployeeWithAddressSchemaType = z.infer<
+  typeof EmployeeWithAddressSchema
+>
