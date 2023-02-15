@@ -451,6 +451,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/validator@npm:^13.7.12":
+  version: 13.7.12
+  resolution: "@types/validator@npm:13.7.12"
+  checksum: 98fc9cb0e0af31a8cf7f3234dbd8391a937b1596cdfea16f21f4228f46d70eea2ebc1128ff6c4041ec7db2d94f093eeb441e66ce1eb9902157b6c44d01066fe2
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:^5.52.0":
   version: 5.52.0
   resolution: "@typescript-eslint/eslint-plugin@npm:5.52.0"
@@ -4464,6 +4471,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"validator@npm:^13.9.0":
+  version: 13.9.0
+  resolution: "validator@npm:13.9.0"
+  checksum: e2c936f041f61faa42bafd17c6faddf939498666cd82e88d733621c286893730b008959f4cb12ab3e236148a4f3805c30b85e3dcf5e0efd8b0cbcd36c02bfc0c
+  languageName: node
+  linkType: hard
+
 "vite@npm:^4.1.0":
   version: 4.1.1
   resolution: "vite@npm:4.1.1"
@@ -4510,6 +4524,7 @@ __metadata:
     "@types/node": ^18.13.0
     "@types/react": ^18.0.28
     "@types/react-dom": ^18.0.10
+    "@types/validator": ^13.7.12
     "@typescript-eslint/eslint-plugin": ^5.52.0
     "@typescript-eslint/parser": ^5.52.0
     "@vitejs/plugin-react-swc": ^3.0.0
@@ -4532,6 +4547,7 @@ __metadata:
     taffydb: ^2.7.3
     tailwindcss: ^3.2.6
     typescript: ^4.9.3
+    validator: ^13.9.0
     vite: ^4.1.0
     zod: ^3.20.6
   languageName: unknown
