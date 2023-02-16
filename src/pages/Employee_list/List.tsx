@@ -16,6 +16,7 @@ import {
 import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {useEffect, useMemo, useState} from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
+import supabase from '@/config/supabaseClient'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -43,20 +44,18 @@ const columnHelper = createColumnHelper<EmployeeWithAddressSchemaType>()
 
 const columns = [
   columnHelper.accessor('firstname', {
-    cell: info => info.getValue(),
-    header: () => <span>First Name</span>,
+    header: 'First Name',
   }),
   columnHelper.accessor(row => row.lastname, {
     id: 'lastName',
+    header: 'Last Name',
     cell: info => <strong>{info.getValue()}</strong>,
-    header: () => <span>Last Name</span>,
   }),
   columnHelper.accessor('startdate', {
-    header: () => 'Start Date',
-    cell: info => info.renderValue(),
+    header: 'Start Date',
   }),
   columnHelper.accessor('department', {
-    header: () => <span>Department</span>,
+    header: 'Department',
   }),
   columnHelper.accessor('birthdate', {
     header: 'Birth Date',
@@ -79,41 +78,67 @@ const List = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
-
-  const data: EmployeeWithAddressSchemaType[] = useMemo(
-    () => JSON.parse(localStorage.getItem('employees') || ''),
+  const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
+  const [employees, setEmployees] = useState<EmployeeWithAddressSchemaType[]>(
     [],
   )
-  const tableData = useMemo(() => data, [data])
+
+  const fetchEmployees = async () => {
+    const {data, error} = await supabase.from('employees').select()
+
+    if (error) {
+      setFetchError('Could not fetch the employees')
+      setEmployees([])
+      console.log(error)
+    }
+    if (data) {
+      setEmployees(data)
+      setFetchError(null)
+      console.log(data)
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees()
+  }, [])
+
+  const tableData = useMemo(() => employees, [employees])
   const tableColumns = useMemo(() => columns, [columns])
 
-  const {getHeaderGroups, getRowModel, getFooterGroups, getState} =
-    useReactTable({
-      columns: tableColumns,
-      data: tableData,
-      state: {
-        sorting,
-        columnFilters,
-        globalFilter,
-      },
-      onSortingChange: setSorting,
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      debugTable: true,
-      filterFns: {
-        fuzzy: fuzzyFilter,
-      },
-      onColumnFiltersChange: setColumnFilters,
-      onGlobalFilterChange: setGlobalFilter,
-      globalFilterFn: fuzzyFilter,
-      getFilteredRowModel: getFilteredRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getFacetedRowModel: getFacetedRowModel(),
-      getFacetedUniqueValues: getFacetedUniqueValues(),
-      getFacetedMinMaxValues: getFacetedMinMaxValues(),
-      debugHeaders: true,
-      debugColumns: false,
-    })
+  const {
+    getHeaderGroups,
+    getRowModel,
+    getState,
+    setPageIndex,
+    getCanPreviousPage,
+    getCanNextPage,
+    previousPage,
+    nextPage,
+    getPageCount,
+    setPageSize,
+  } = useReactTable({
+    columns: tableColumns,
+    data: tableData,
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+  })
 
   useEffect(() => {
     if (getState().columnFilters[0]?.id === 'fullName') {
@@ -167,6 +192,7 @@ const List = () => {
               </tr>
             ))}
           </thead>
+          {fetchError && <p>{fetchError}</p> /*TODO à supprimer*/}
           <tbody>
             {getRowModel().rows.map(row => (
               <tr key={row.id}>
@@ -182,6 +208,67 @@ const List = () => {
             ))}
           </tbody>
         </table>
+        <div className="h-8" />
+        <div className="flex items-center gap-2">
+          <button
+            className="border rounded p-1"
+            onClick={() => setPageIndex(0)}
+            disabled={!getCanPreviousPage()}
+          >
+            {'<<'}
+          </button>
+          <button
+            className="border rounded p-1"
+            onClick={() => previousPage()}
+            disabled={!getCanPreviousPage()}
+          >
+            {'<'}
+          </button>
+          <button
+            className="border rounded p-1"
+            onClick={() => nextPage()}
+            disabled={!getCanNextPage()}
+          >
+            {'>'}
+          </button>
+          <button
+            className="border rounded p-1"
+            onClick={() => setPageIndex(getPageCount() - 1)}
+            disabled={!getCanNextPage()}
+          >
+            {'>>'}
+          </button>
+          <span className="flex items-center gap-1">
+            <div>Page</div>
+            <strong>
+              {getState().pagination.pageIndex + 1} of {getPageCount()}
+            </strong>
+          </span>
+          <span className="flex items-center gap-1">
+            | Go to page:
+            <input
+              type="number"
+              defaultValue={getState().pagination.pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0
+                setPageIndex(page)
+              }}
+              className="border p-1 rounded w-16"
+            />
+          </span>
+          <select
+            value={getState().pagination.pageSize}
+            onChange={e => {
+              setPageSize(Number(e.target.value))
+            }}
+          >
+            {[5, 10, 25, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </>
   )

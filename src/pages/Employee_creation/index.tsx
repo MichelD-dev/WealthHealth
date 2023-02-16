@@ -1,13 +1,11 @@
 import {SubmitHandler, useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {EmployeeSchema, EmployeeSchemaType} from '@/types/employee.model'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import supabase from '@/config/supabaseClient'
+import {useNavigate} from 'react-router-dom'
 
 const Form = () => {
-  const [employees, setEmployees] = useState<EmployeeSchemaType[]>(
-    () => JSON.parse(localStorage.getItem('employees') || '') || [],
-  )
-
   const {
     register,
     handleSubmit,
@@ -17,7 +15,7 @@ const Form = () => {
     formState,
     formState: {errors, isSubmitting, isSubmitSuccessful},
   } = useForm<EmployeeSchemaType>({
-    resolver: zodResolver(EmployeeSchema),
+    resolver: useMemo(() => zodResolver(EmployeeSchema), [EmployeeSchema]),
   })
 
   useEffect(() => {
@@ -30,23 +28,31 @@ const Form = () => {
     }
   }, [formState, reset])
 
-  const onSubmit: SubmitHandler<EmployeeSchemaType> = data => {
-    setEmployees([...employees, data])
-  }
+  const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
+    async employee => {
+      const {error, status} = await supabase.from('employees').insert(employee)
 
-  useEffect(
-    () => localStorage.setItem('employees', JSON.stringify(employees)),
-    [employees],
+      if (status === 201) {
+        navigate('/list')
+      }
+
+      if (error) {
+        console.log(error)
+      }
+    },
+    [],
   )
 
   const address = watch('address')
 
+  const navigate = useNavigate()
+
   return (
     <section>
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+        <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold text-[#aabe44] leading-tight tracking-tight  md:text-2xl">
+            <h1 className="text-xl font-bold text-[#aabe44] leading-tight tracking-tight md:text-2xl">
               Create Employee
             </h1>
             <form
