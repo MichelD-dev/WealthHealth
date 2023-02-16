@@ -3795,6 +3795,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postgrest-js-tools@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "postgrest-js-tools@npm:1.2.0"
+  checksum: cb35f1b8bc4ea859d82bc2b4c4405d16fc9fe4a437c680a6d741fd8cc716a220b76d63540578d67dab3e7ce0e10cefdce44853bf7294797b11090b4ec371977f
+  languageName: node
+  linkType: hard
+
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -4899,6 +4906,7 @@ __metadata:
     lint-staged: ^13.1.2
     npm-run-all: ^4.1.5
     postcss: ^8.4.21
+    postgrest-js-tools: ^1.2.0
     prettier: ^2.8.4
     react: ^18.2.0
     react-dom: ^18.2.0

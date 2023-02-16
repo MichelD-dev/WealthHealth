@@ -17,6 +17,13 @@ import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {useEffect, useMemo, useState} from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
+import {getShape, getFields} from 'postgrest-js-tools'
+import {Database} from '@/types/supabase'
+import {Employee} from '@/types/types'
+
+// const expectedShape = getShape<Database['public']['Tables']["employees"]["Row"]>()({
+//   firstname: true,
+// })
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -83,8 +90,28 @@ const List = () => {
     [],
   )
 
+  // function selectFromEmployees<F extends keyof Employee>(columns: F[]) {
+  //   return supabase.from<Pick<Employee, F>>('employees').select(columns.join(', '))
+  // }
+
   const fetchEmployees = async () => {
-    const {data, error} = await supabase.from('employees').select()
+    //   const {data, error} = await selectFromEmployees([
+    //     'firstname',
+    //     'lastname',
+    //     'startdate',
+    //     'department',
+    //     'birthdate',
+    //     'street',
+    //     'city',
+    //     'state',
+    //     'zipcode',
+    //   ])
+    const {data, error} = await supabase
+      .from('employees')
+      .select(
+        'firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
+      )
+    // .limit(10)
 
     if (error) {
       setFetchError('Could not fetch the employees')

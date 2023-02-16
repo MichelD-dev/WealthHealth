@@ -1,7 +1,11 @@
 import {SubmitHandler, useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {EmployeeSchema, EmployeeSchemaType} from '@/types/employee.model'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  EmployeeSchema,
+  EmployeeSchemaType,
+  EmployeeWithAddressSchemaType,
+} from '@/types/employee.model'
+import {useCallback, useEffect, useMemo} from 'react'
 import supabase from '@/config/supabaseClient'
 import {useNavigate} from 'react-router-dom'
 
@@ -14,7 +18,7 @@ const Form = () => {
     reset,
     formState,
     formState: {errors, isSubmitting, isSubmitSuccessful},
-  } = useForm<EmployeeSchemaType>({
+  } = useForm<EmployeeWithAddressSchemaType>({
     resolver: useMemo(() => zodResolver(EmployeeSchema), [EmployeeSchema]),
   })
 
@@ -194,11 +198,11 @@ const Form = () => {
                       }`}
                       {...register('street', {shouldUnregister: true})}
                     />
-                    {/* {errors.street && (
+                    {errors.street && (
                       <span className="text-red-600 block mt-2 text-right">
                         {errors.street?.message}
                       </span>
-                    )} */}
+                    )}
                   </div>
                   <div>
                     <label
@@ -215,11 +219,11 @@ const Form = () => {
                       }`}
                       {...register('city', {shouldUnregister: true})}
                     />
-                    {/* {errors.city && (
+                    {errors.city && (
                       <span className="text-red-600 block mt-2 text-right">
                         {errors.city?.message}
                       </span>
-                    )} */}
+                    )}
                   </div>
                   <div>
                     <label
@@ -256,11 +260,11 @@ const Form = () => {
                       }`}
                       {...register('zipcode', {shouldUnregister: true})}
                     />
-                    {/* {errors.zipcode && (
+                    {errors.zipcode && (
                       <span className="text-red-600 block mt-2 text-right">
                         {errors.zipcode?.message}
                       </span>
-                    )} */}
+                    )}
                   </div>
                 </fieldset>
               )}

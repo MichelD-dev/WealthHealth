@@ -1,16 +1,17 @@
 import {z} from 'zod'
-import isEmail from 'validator/lib/isEmail'
 
 const EmployeeWithoutAddressSchema = z.object({
   firstname: z.string().trim().min(1, {message: 'First name is required'}),
   lastname: z.string().trim().min(1, {message: 'Last name is required'}),
   email: z.string().trim().min(1, {message: 'Email is required'}).email(),
-  birthdate: z.preprocess(arg => {
-    if (typeof arg == 'string' || arg instanceof Date) return new Date(arg)
-  }, z.date()),
-  startdate: z.preprocess(arg => {
-    if (typeof arg == 'string' || arg instanceof Date) return new Date(arg)
-  }, z.date()),
+  // birthdate: z.preprocess(arg => {
+  //   if (typeof arg === 'string' || arg instanceof Date) return new Date(arg)
+  // }, z.date()),
+  // startdate: z.preprocess(arg => {
+  //   if (typeof arg === 'string' || arg instanceof Date) return new Date(arg)
+  // }, z.date()),
+  birthdate: z.string(),
+  startdate: z.string(),
   address: z.literal(false),
   department: z.enum([
     'Sales',
