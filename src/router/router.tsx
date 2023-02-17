@@ -3,17 +3,58 @@ import {
   createRoutesFromElements,
   Route,
 } from 'react-router-dom'
-import Error404 from '@/pages/error404/Error404'
-import Form from '@/pages/Employee_creation/creation'
+import {Suspense, lazy} from 'react'
 import App from '@/App'
-import List from '@/pages/Employee_list/List'
+
+const Form = lazy(() => import('@/pages/Employee_creation/creation'))
+const List = lazy(() => import('@/pages/Employee_list/List'))
+const Error404 = lazy(() => import('@/pages/error404/Error404'))
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route index element={<Form />} />
-      <Route path="list" element={<List />} />
-      <Route path="*" element={<Error404 />} />
+      <Route
+        index
+        element={
+          <Suspense
+            fallback={
+              <div className="w-full mt-20 flex justify-center items-center">
+                <p>Loading...</p>
+              </div>
+            }
+          >
+            <Form />
+          </Suspense>
+        }
+      />
+      <Route
+        path="list"
+        element={
+          <Suspense
+            fallback={
+              <div className="w-full mt-20 flex justify-center items-center">
+                <p>Loading...</p>
+              </div>
+            }
+          >
+            <List />
+          </Suspense>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Suspense
+            fallback={
+              <div className="w-full mt-20 flex justify-center items-center">
+                <p>Loading...</p>
+              </div>
+            }
+          >
+            <Error404 />
+          </Suspense>
+        }
+      />
     </Route>,
   ),
 )
