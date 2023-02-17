@@ -37,8 +37,9 @@ const Form = () => {
 
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
     async employee => {
-      const {error, status} = await supabase.from('employees').insert(employee)
-      console.log(employee, typeof employee.birthdate)
+      const {data, error, status} = await supabase.from('employees').insert(employee).select(
+        'birthdate')
+      console.log(employee, data)
       if (status === 201) {
         navigate('/list')
       }
@@ -80,10 +81,15 @@ const Form = () => {
                   className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                     errors.firstname ? 'border-red-500' : 'border-gray-300'
                   }`}
+                  aria-invalid={errors.firstname ? 'true' : 'false'}
+                  aria-describedby={errors.firstname && 'firstname-error'}
                   {...register('firstname')}
                 />
                 {errors.firstname && (
-                  <span className="text-red-600 block mt-2 text-right">
+                  <span
+                    id="firstname-error"
+                    className="text-red-600 block mt-2 text-right"
+                  >
                     {errors.firstname?.message}
                   </span>
                 )}
@@ -101,10 +107,15 @@ const Form = () => {
                   className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                     errors.lastname ? 'border-red-500' : 'border-gray-300'
                   }`}
+                  aria-invalid={errors.lastname ? 'true' : 'false'}
+                  aria-describedby={errors.lastname && 'lastname-error'}
                   {...register('lastname')}
                 />
                 {errors.lastname && (
-                  <span className="text-red-600 block mt-2 text-right">
+                  <span
+                    id="lastname-error"
+                    className="text-red-600 block mt-2 text-right"
+                  >
                     {errors.lastname?.message}
                   </span>
                 )}
@@ -122,10 +133,15 @@ const Form = () => {
                   className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   }`}
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                  aria-describedby={errors.email && 'email-error'}
                   {...register('email')}
                 />
                 {errors.email && (
-                  <span className="text-red-600 block mt-2 text-right">
+                  <span
+                    id="email-error"
+                    className="text-red-600 block mt-2 text-right"
+                  >
                     {errors.email?.message}
                   </span>
                 )}
@@ -156,11 +172,16 @@ const Form = () => {
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                         errors.birthdate ? 'border-red-500' : 'border-gray-300'
                       }`}
+                      aria-invalid={errors.birthdate ? 'true' : 'false'}
+                      aria-describedby={errors.birthdate && 'birthdate-error'}
                     />
                   )}
                 />
                 {errors.birthdate && (
-                  <span className="text-red-600 block mt-2 text-right">
+                  <span
+                    id="birthdate-error"
+                    className="text-red-600 block mt-2 text-right"
+                  >
                     {errors.birthdate?.message}
                   </span>
                 )}
@@ -192,8 +213,10 @@ const Form = () => {
                       scrollableYearDropdown
                       shouldCloseOnSelect={false}
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
-                        errors.birthdate ? 'border-red-500' : 'border-gray-300'
+                        errors.startdate ? 'border-red-500' : 'border-gray-300'
                       } `}
+                      aria-invalid={errors.startdate ? 'true' : 'false'}
+                      aria-describedby={errors.startdate && 'startdate-error'}
                     />
                   )}
                 />
@@ -206,7 +229,10 @@ const Form = () => {
                   {...register('startdate')}
                 /> */}
                 {errors.startdate && (
-                  <span className="text-red-600 block mt-2 text-right">
+                  <span
+                    id="startdate-error"
+                    className="text-red-600 block mt-2 text-right"
+                  >
                     {errors.startdate?.message}
                   </span>
                 )}
@@ -238,10 +264,15 @@ const Form = () => {
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                         errors.street ? 'border-red-500' : 'border-gray-300'
                       }`}
+                      aria-invalid={errors.street ? 'true' : 'false'}
+                      aria-describedby={errors.street && 'street-error'}
                       {...register('street', {shouldUnregister: true})}
                     />
                     {errors.street && (
-                      <span className="text-red-600 block mt-2 text-right">
+                      <span
+                        id="street-error"
+                        className="text-red-600 block mt-2 text-right"
+                      >
                         {errors.street?.message}
                       </span>
                     )}
@@ -259,10 +290,15 @@ const Form = () => {
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                         errors.city ? 'border-red-500' : 'border-gray-300'
                       }`}
+                      aria-invalid={errors.city ? 'true' : 'false'}
+                      aria-describedby={errors.city && 'city-error'}
                       {...register('city', {shouldUnregister: true})}
                     />
                     {errors.city && (
-                      <span className="text-red-600 block mt-2 text-right">
+                      <span
+                        id="city-error"
+                        className="text-red-600 block mt-2 text-right"
+                      >
                         {errors.city?.message}
                       </span>
                     )}
@@ -300,10 +336,15 @@ const Form = () => {
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                         errors.zipcode ? 'border-red-500' : 'border-gray-300'
                       }`}
+                      aria-invalid={errors.zipcode ? 'true' : 'false'}
+                      aria-describedby={errors.zipcode && 'zipcode-error'}
                       {...register('zipcode', {shouldUnregister: true})}
                     />
                     {errors.zipcode && (
-                      <span className="text-red-600 block mt-2 text-right">
+                      <span
+                        id="zipcode-error"
+                        className="text-red-600 block mt-2 text-right"
+                      >
                         {errors.zipcode?.message}
                       </span>
                     )}

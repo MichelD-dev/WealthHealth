@@ -119,7 +119,7 @@ const List = () => {
     if (data) {
       setEmployees(data)
       setFetchError(null)
-      console.log(data)
+      // console.log(data)
     }
   }
 
