@@ -10,8 +10,8 @@ const EmployeeWithoutAddressSchema = z.object({
   // startdate: z.preprocess(arg => {
   //   if (typeof arg === 'string' || arg instanceof Date) return new Date(arg)
   // }, z.date()),
-  birthdate: z.string(),
-  startdate: z.string(),
+  birthdate: z.date(),
+  startdate: z.date(),
   address: z.literal(false),
   department: z.enum([
     'Sales',

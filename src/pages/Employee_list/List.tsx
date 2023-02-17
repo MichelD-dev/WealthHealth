@@ -86,9 +86,7 @@ const List = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
-  const [employees, setEmployees] = useState<EmployeeWithAddressSchemaType[]>(
-    [],
-  )
+  const [employees, setEmployees] = useState<Partial<Employee>[]>([])
 
   // function selectFromEmployees<F extends keyof Employee>(columns: F[]) {
   //   return supabase.from<Pick<Employee, F>>('employees').select(columns.join(', '))

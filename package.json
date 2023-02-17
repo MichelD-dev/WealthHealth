@@ -16,8 +16,8 @@
     "@supabase/supabase-js": "^2.8.0",
     "@tanstack/match-sorter-utils": "^8.7.6",
     "@tanstack/react-table": "^8.7.9",
-    "postgrest-js-tools": "^1.2.0",
     "react": "^18.2.0",
+    "react-datepicker": "^4.10.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.1",
     "react-router-dom": "^6.8.1",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/node": "^18.13.0",
     "@types/react": "^18.0.28",
+    "@types/react-datepicker": "^4.8.0",
     "@types/react-dom": "^18.0.10",
     "@types/validator": "^13.7.12",
     "@typescript-eslint/eslint-plugin": "^5.52.0",

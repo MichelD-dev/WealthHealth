@@ -1,4 +1,4 @@
-import {SubmitHandler, useForm} from 'react-hook-form'
+import {SubmitHandler, useForm, Controller} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {
   EmployeeSchema,
@@ -8,6 +8,8 @@ import {
 import {useCallback, useEffect, useMemo} from 'react'
 import supabase from '@/config/supabaseClient'
 import {useNavigate} from 'react-router-dom'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 const Form = () => {
   const {
@@ -16,6 +18,7 @@ const Form = () => {
     watch,
     setFocus,
     reset,
+    control,
     formState,
     formState: {errors, isSubmitting, isSubmitSuccessful},
   } = useForm<EmployeeWithAddressSchemaType>({
@@ -35,7 +38,7 @@ const Form = () => {
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
     async employee => {
       const {error, status} = await supabase.from('employees').insert(employee)
-
+      console.log(employee, typeof employee.birthdate)
       if (status === 201) {
         navigate('/list')
       }
@@ -134,14 +137,28 @@ const Form = () => {
                 >
                   Date of birth
                 </label>
-                <input
-                  type="date"
-                  id="date"
-                  className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
-                    errors.birthdate ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  {...register('birthdate')}
-                />{' '}
+                <Controller
+                  name="birthdate"
+                  control={control}
+                  render={({field}) => (
+                    <DatePicker
+                      onChange={date => field.onChange(date)}
+                      selected={field.value}
+                      // showIcon
+                      todayButton="Today"
+                      isClearable
+                      maxDate={new Date()}
+                      showYearDropdown
+                      dateFormatCalendar="MMMM"
+                      yearDropdownItemNumber={15}
+                      scrollableYearDropdown
+                      shouldCloseOnSelect={false}
+                      className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
+                        errors.birthdate ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                  )}
+                />
                 {errors.birthdate && (
                   <span className="text-red-600 block mt-2 text-right">
                     {errors.birthdate?.message}
@@ -155,14 +172,39 @@ const Form = () => {
                 >
                   Start Date
                 </label>
-                <input
+                <Controller
+                  name="startdate"
+                  control={control}
+                  render={({field}) => (
+                    <DatePicker
+                      onChange={date => field.onChange(date)}
+                      selected={field.value}
+                      todayButton="Today"
+                      // showIcon
+                      isClearable
+                      maxDate={new Date()}
+                      filterDate={date =>
+                        date.getDay() !== 6 && date.getDay() !== 0
+                      }
+                      showYearDropdown
+                      dateFormatCalendar="MMMM"
+                      yearDropdownItemNumber={15}
+                      scrollableYearDropdown
+                      shouldCloseOnSelect={false}
+                      className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
+                        errors.birthdate ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    />
+                  )}
+                />
+                {/* <input
                   type="date"
                   id="email"
                   className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                     errors.startdate ? 'border-red-500' : 'border-gray-300'
                   }`}
                   {...register('startdate')}
-                />
+                /> */}
                 {errors.startdate && (
                   <span className="text-red-600 block mt-2 text-right">
                     {errors.startdate?.message}
