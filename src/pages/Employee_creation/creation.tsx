@@ -193,7 +193,7 @@ const Form = () => {
                       shouldCloseOnSelect={false}
                       className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
                         errors.birthdate ? 'border-red-500' : 'border-gray-300'
-                      }`}
+                      } `}
                     />
                   )}
                 />

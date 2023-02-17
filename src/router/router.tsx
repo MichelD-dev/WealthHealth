@@ -4,7 +4,7 @@ import {
   Route,
 } from 'react-router-dom'
 import Error404 from '@/pages/error404/Error404'
-import Form from '@/pages/Employee_creation'
+import Form from '@/pages/Employee_creation/creation'
 import App from '@/App'
 import List from '@/pages/Employee_list/List'
 

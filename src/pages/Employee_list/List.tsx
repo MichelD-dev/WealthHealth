@@ -17,8 +17,8 @@ import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {useEffect, useMemo, useState} from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
-import {getShape, getFields} from 'postgrest-js-tools'
-import {Database} from '@/types/supabase'
+// import {getShape, getFields} from 'postgrest-js-tools'
+// import {Database} from '@/types/supabase'
 import {Employee} from '@/types/types'
 
 // const expectedShape = getShape<Database['public']['Tables']["employees"]["Row"]>()({
