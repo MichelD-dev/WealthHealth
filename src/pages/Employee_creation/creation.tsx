@@ -10,6 +10,7 @@ import supabase from '@/config/supabaseClient'
 import {useNavigate} from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import convertLocalToUTCDate from '@/utils/timeconverter'
 
 const Form = () => {
   const {
@@ -37,8 +38,10 @@ const Form = () => {
 
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
     async employee => {
-      const {data, error, status} = await supabase.from('employees').insert(employee).select(
-        'birthdate')
+      const {data, error, status} = await supabase
+        .from('employees')
+        .insert(employee)
+        .select('birthdate')
       console.log(employee, data)
       if (status === 201) {
         navigate('/list')
@@ -158,7 +161,9 @@ const Form = () => {
                   control={control}
                   render={({field}) => (
                     <DatePicker
-                      onChange={date => field.onChange(date)}
+                      onChange={date =>
+                        field.onChange(convertLocalToUTCDate(date))
+                      }
                       selected={field.value}
                       // showIcon
                       todayButton="Today"
@@ -198,7 +203,9 @@ const Form = () => {
                   control={control}
                   render={({field}) => (
                     <DatePicker
-                      onChange={date => field.onChange(date)}
+                      onChange={date =>
+                        field.onChange(convertLocalToUTCDate(date))
+                      }
                       selected={field.value}
                       todayButton="Today"
                       // showIcon
