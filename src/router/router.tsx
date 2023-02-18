@@ -18,7 +18,7 @@ const router = createBrowserRouter(
         element={
           <Suspense
             fallback={
-              <div className="w-full mt-20 flex justify-center items-center">
+              <div className="w-full mt-20 flex justify-center">
                 <p>Loading...</p>
               </div>
             }
@@ -32,7 +32,7 @@ const router = createBrowserRouter(
         element={
           <Suspense
             fallback={
-              <div className="w-full mt-20 flex justify-center items-center">
+              <div className="w-full mt-20 flex justify-center">
                 <p>Loading...</p>
               </div>
             }
@@ -46,7 +46,7 @@ const router = createBrowserRouter(
         element={
           <Suspense
             fallback={
-              <div className="w-full mt-20 flex justify-center items-center">
+              <div className="w-full mt-20 flex justify-center">
                 <p>Loading...</p>
               </div>
             }
