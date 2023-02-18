@@ -5,13 +5,15 @@ import {
   EmployeeSchemaType,
   EmployeeWithAddressSchemaType,
 } from '@/types/employee.model'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef, lazy, Suspense} from 'react'
 import supabase from '@/config/supabaseClient'
 import {useNavigate} from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import convertLocalToUTCDate from '@/utils/timeconverter'
-import {Modal} from '@/components/Modal'
+import {ModalRef} from '@/components/Modal/ModalController'
+
+const Modal = lazy(() => import('@/components/Modal/Modal'))
 
 const Form = () => {
   const {
@@ -37,10 +39,12 @@ const Form = () => {
     }
   }, [formState, reset])
 
-  const modal = useRef(null)
+  const modalRef = useRef<ModalRef>(null)
 
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
-    () => modal.current.open(),
+    () => {
+      modalRef.current?.open()
+    },
     // async employee => {
     //   const {data, error, status} = await supabase
     //     .from('employees')
@@ -63,10 +67,12 @@ const Form = () => {
 
   return (
     <>
-      <Modal ref={modal}>Hello World</Modal>
+      <Suspense>
+        <Modal ref={modalRef}>Employee Created!</Modal>
+      </Suspense>
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
+          <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 absolute top-20">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold text-[#aabe44] leading-tight tracking-tight md:text-2xl">
                 Create Employee
