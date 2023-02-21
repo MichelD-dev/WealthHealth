@@ -15,7 +15,6 @@ import {ModalRef} from '@/components/Modal/Modal'
 
 import {Modal} from '../../../lib/dist'
 // import {Modal} from 'md-modal'
-import type {ModalRef} from '@/components/Modal/Modal'
 import Dropdown from '@/components/Dropdown/Dropdown'
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
 
@@ -45,27 +44,27 @@ const Form = () => {
 
   const modalRef = useRef<ModalRef>(null)
 
-  const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
-    () => modalRef.current?.open(),
-    // async employee => {
-    //   const {data, error, status} = await supabase
-    //     .from('employees')
-    //     .insert(employee)
-    //     .select('birthdate')
-    //   console.log(employee, data)
-    //   if (status === 201) {
-    //     navigate('/list')
-    //   }
+  const navigate = useNavigate()
 
-    //   if (error) {
-    //     console.log(error)
-    //   }
+  const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
+    // () => modalRef.current?.open(),
+    async employee => {
+      const {data, error, status} = await supabase
+        .from('employees')
+        .insert(employee)
+        .select('birthdate')
+      console.log(employee, data)
+      if (status === 201) {
+        navigate('/list')
+      }
+      if (error) {
+        console.log(error)
+      }
+    },
     [],
   )
 
   const address = watch('address')
-
-  const navigate = useNavigate()
 
   return (
     <>
@@ -327,26 +326,21 @@ const Form = () => {
                         </span>
                       )}
                     </div>
-                    <div>
-                      <label
-                        htmlFor="state"
-                        className="block mb-2 text-sm font-medium text-gray-900 "
-                      >
-                        State
-                      </label>
-
-                      <div className="mb-3 xl:w-96">
-                        <select
-                          id="state"
-                          className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 "
-                          {...register('state', {shouldUnregister: true})}
-                        >
-                          <option value="Alabama">Alabama</option>
-                          <option value="Ohio">Ohio</option>
-                          <option value="Montana">Montana</option>
-                        </select>
-                      </div>
-                    </div>
+                    <Controller
+                      name="state"
+                      control={control}
+                      render={({field: {onChange, onBlur, value}}) => (
+                        <Dropdown
+                          label="State"
+                          labelclassname="block mb-2 text-sm font-medium text-gray-900 "
+                          options={['Alabama', 'Ohio', 'Montana']}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          value={value}
+                          className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+                        />
+                      )}
+                    />
                     <div>
                       <label
                         htmlFor="zipcode"
@@ -375,28 +369,27 @@ const Form = () => {
                     </div>
                   </fieldset>
                 )}
-                <div>
-                  <label
-                    htmlFor="department"
-                    className="block mb-2 text-sm font-medium text-gray-900 "
-                  >
-                    Department
-                  </label>
-                  <div className="mb-3 xl:w-96">
-                    <select
-                      id="state"
-                      className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 "
-                      {...register('department')}
-                    >
-                      <option value="Sales">Sales</option>
-                      <option value="Marketing">Marketing</option>
-                      <option value="Engineering">Engineering</option>
-                      <option value="Human Ressources">Human Ressources</option>
-                      <option value="Legal">Legal</option>
-                    </select>
-                  </div>
-                </div>
-
+                <Controller
+                  name="department"
+                  control={control}
+                  render={({field: {onChange, onBlur, value}}) => (
+                    <Dropdown
+                      label="Department"
+                      labelclassname="block mb-2 text-sm font-medium text-gray-900 "
+                      options={[
+                        'Sales',
+                        'Marketing',
+                        'Engineering',
+                        'Human Ressources',
+                        'Legal',
+                      ]}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+                    />
+                  )}
+                />
                 <button
                   type="submit"
                   className={`w-full text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
