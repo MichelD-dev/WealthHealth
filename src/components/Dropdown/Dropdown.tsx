@@ -8,12 +8,12 @@ type DropdownProps<T extends string | number | string[]> = {
   value?: T
 } & HTMLProps<HTMLSelectElement>
 
-function Dropdown<T extends string | number | string[]>({
+const Dropdown = <T extends string | number | string[]>({
   options,
   label,
   onChange,
   ...props
-}: DropdownProps<T>) {
+}: DropdownProps<T>) => {
   const [selectedValue, setSelectedValue] = useState<T>(options[0])
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
