@@ -22,15 +22,11 @@ import {ModalRef} from '@/components/Modal/Modal'
 import Dropdown from '@/components/Dropdown/Dropdown'
 
 import {Modal} from '../../../lib/dist'
-import {TextInput} from '@/components/InputField'
+import TextInput from '@/components/formInputs/InputField'
+import DateInput from '@/components/formInputs/DateInput'
 
 // import {Modal} from 'md-modal'
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
-
-type FormValues = {
-  firstname: string
-  lastname: string
-}
 
 const Form = () => {
   const [fetchError, setFetchError] = useState<string | null>(null)
@@ -117,98 +113,25 @@ const Form = () => {
                   register={register}
                   error={errors.lastname?.message}
                 />
-
                 <TextInput<EmployeeWithAddressSchemaType>
                   label="Your email"
                   id="email"
                   register={register}
                   error={errors.email?.message}
                 />
-                <div>
-                  <label htmlFor="birthdate" className="block my-1">
-                    Date of birth
-                  </label>
-                  <Controller
-                    name="birthdate"
-                    control={control}
-                    render={({field}) => (
-                      <DatePicker
-                        onChange={date =>
-                          field.onChange(convertLocalToUTCDate(date))
-                        }
-                        selected={field.value}
-                        // showIcon
-                        todayButton="Today"
-                        isClearable
-                        maxDate={new Date()}
-                        showYearDropdown
-                        dateFormatCalendar="MMMM"
-                        yearDropdownItemNumber={15}
-                        scrollableYearDropdown
-                        shouldCloseOnSelect={false}
-                        className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
-                          errors.birthdate
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        }`}
-                        aria-invalid={errors.birthdate ? 'true' : 'false'}
-                        aria-describedby={errors.birthdate && 'birthdate-error'}
-                      />
-                    )}
-                  />
-                  {errors.birthdate && (
-                    <span
-                      id="birthdate-error"
-                      className="text-red-600 block mt-2 text-right"
-                    >
-                      {errors.birthdate?.message}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="startdate" className="block my-1">
-                    Start Date
-                  </label>
-                  <Controller
-                    name="startdate"
-                    control={control}
-                    render={({field}) => (
-                      <DatePicker
-                        onChange={date =>
-                          field.onChange(convertLocalToUTCDate(date))
-                        }
-                        selected={field.value}
-                        todayButton="Today"
-                        // showIcon
-                        isClearable
-                        maxDate={new Date()}
-                        filterDate={date =>
-                          date.getDay() !== 6 && date.getDay() !== 0
-                        }
-                        showYearDropdown
-                        dateFormatCalendar="MMMM"
-                        yearDropdownItemNumber={15}
-                        scrollableYearDropdown
-                        shouldCloseOnSelect={false}
-                        className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
-                          errors.startdate
-                            ? 'border-red-500'
-                            : 'border-gray-300'
-                        } `}
-                        aria-invalid={errors.startdate ? 'true' : 'false'}
-                        aria-describedby={errors.startdate && 'startdate-error'}
-                      />
-                    )}
-                  />
-                  {errors.startdate && (
-                    <span
-                      id="startdate-error"
-                      className="text-red-600 block mt-2 text-right"
-                    >
-                      {errors.startdate?.message}
-                    </span>
-                  )}
-                </div>
+                <DateInput
+                  label="Date of birth"
+                  fieldName="birthdate"
+                  control={control}
+                  errors={errors}
+                />
+                <DateInput
+                  label="Start Date"
+                  fieldName="startdate"
+                  control={control}
+                  errors={errors}
+                />
+
                 <div className="flex align-bottom">
                   <label className="block my-1">
                     <input
