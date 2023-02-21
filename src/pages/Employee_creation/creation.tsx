@@ -11,9 +11,13 @@ import {useNavigate} from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import convertLocalToUTCDate from '@/utils/timeconverter'
-import {ModalRef} from '@/components/Modal/ModalController'
+import {ModalRef} from '@/components/Modal/Modal'
 
-const Modal = lazy(() => import('@/components/Modal/Modal'))
+import {Modal} from '../../../lib/dist'
+// import {Modal} from 'md-modal'
+import type {ModalRef} from '@/components/Modal/Modal'
+import Dropdown from '@/components/Dropdown/Dropdown'
+// const Modal = lazy(() => import('@/components/Modal/Modal'))
 
 const Form = () => {
   const {
@@ -42,9 +46,7 @@ const Form = () => {
   const modalRef = useRef<ModalRef>(null)
 
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
-    () => {
-      modalRef.current?.open()
-    },
+    () => modalRef.current?.open(),
     // async employee => {
     //   const {data, error, status} = await supabase
     //     .from('employees')

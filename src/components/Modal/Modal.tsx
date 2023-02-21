@@ -6,12 +6,16 @@ import {
   useMemo,
 } from 'react'
 import {createPortal} from 'react-dom'
-import {ModalRef} from './ModalController'
 import {useModal} from './useModal'
 
 interface ModalProps {
   children: React.ReactNode
   defaultOpened?: boolean
+}
+
+export interface ModalRef {
+  open: () => void
+  close: () => void
 }
 
 const Modal = forwardRef<ModalRef, ModalProps>(
@@ -89,4 +93,5 @@ const Modal = forwardRef<ModalRef, ModalProps>(
 )
 
 Modal.displayName = 'Modal'
+
 export default Modal

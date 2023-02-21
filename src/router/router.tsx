@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom'
 import {Suspense, lazy} from 'react'
 import App from '@/App'
+import Spinner from '@/components/Spinner/Spinner'
 
 const Form = lazy(() => import('@/pages/Employee_creation/creation'))
 const LoginForm = lazy(() => import('@/pages/Login/Login'))
@@ -17,13 +18,7 @@ const router = createBrowserRouter(
       <Route
         index
         element={
-          <Suspense
-            fallback={
-              <div className="w-full mt-20 flex justify-center">
-                <p>Loading...</p>
-              </div>
-            }
-          >
+          <Suspense fallback={<Spinner />}>
             <LoginForm />
           </Suspense>
         }
@@ -31,13 +26,7 @@ const router = createBrowserRouter(
       <Route
         path="create"
         element={
-          <Suspense
-            fallback={
-              <div className="w-full mt-20 flex justify-center">
-                <p>Loading...</p>
-              </div>
-            }
-          >
+          <Suspense fallback={<Spinner />}>
             <Form />
           </Suspense>
         }
@@ -45,13 +34,7 @@ const router = createBrowserRouter(
       <Route
         path="list"
         element={
-          <Suspense
-            fallback={
-              <div className="w-full mt-20 flex justify-center">
-                <p>Loading...</p>
-              </div>
-            }
-          >
+          <Suspense fallback={<Spinner />}>
             <List />
           </Suspense>
         }
@@ -59,13 +42,7 @@ const router = createBrowserRouter(
       <Route
         path="*"
         element={
-          <Suspense
-            fallback={
-              <div className="w-full mt-20 flex justify-center">
-                <p>Loading...</p>
-              </div>
-            }
-          >
+          <Suspense fallback={<Spinner />}>
             <Error404 />
           </Suspense>
         }
