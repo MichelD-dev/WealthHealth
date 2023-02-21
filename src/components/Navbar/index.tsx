@@ -1,7 +1,20 @@
-import {NavLink, useLocation} from 'react-router-dom'
+import supabase from '@/config/supabaseClient'
+import {NavLink, useLocation, useNavigate} from 'react-router-dom'
 
 const Navbar = () => {
   const {pathname} = useLocation()
+
+  const navigate = useNavigate()
+
+  supabase.auth.onAuthStateChange(async event => {
+    if (event !== 'SIGNED_OUT') {
+      navigate('/list')
+    } else {
+      navigate('/')
+    }
+  })
+
+  const signOut = async () => await supabase.auth.signOut()
 
   return (
     <>
@@ -14,23 +27,48 @@ const Navbar = () => {
             HRnet
           </a>
         </div>
-        <div>
-          {pathname === '/' ? (
-            <NavLink
-              to="/list"
-              className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
-            >
-              View Current Employees
-            </NavLink>
-          ) : (
-            <NavLink
-              to="/"
-              className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
-            >
-              Home
-            </NavLink>
-          )}
-        </div>
+        {pathname === '/create' && (
+          <ul className="flex flex-row gap-10 mr-5 list-none">
+            <li className="list-none">
+              <NavLink
+                to="/list"
+                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
+              >
+                View Current Employees
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/"
+                onClick={signOut}
+                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
+              >
+                Log out
+              </NavLink>
+            </li>
+          </ul>
+        )}
+        {pathname === '/list' && (
+          <ul className="flex flex-row gap-10 mr-5 list-none">
+            <li className="list-none">
+              <NavLink
+                to="/create"
+                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
+              >
+                Create New Employee
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/"
+                onClick={signOut}
+                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
+              >
+                Log out
+              </NavLink>
+            </li>
+          </ul>
+        )}
       </nav>
     </>
   )
