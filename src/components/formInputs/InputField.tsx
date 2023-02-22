@@ -1,3 +1,4 @@
+import {InputHTMLAttributes} from 'react'
 import {FieldValues, Path, UseFormRegister} from 'react-hook-form'
 
 type TextInputProps<TFieldValues extends FieldValues> = {
@@ -5,13 +6,14 @@ type TextInputProps<TFieldValues extends FieldValues> = {
   id: Path<TFieldValues>
   register: UseFormRegister<TFieldValues>
   error?: string
-} & React.InputHTMLAttributes<HTMLInputElement>
+} & InputHTMLAttributes<HTMLInputElement>
 
 const TextInput = <TFieldValues extends FieldValues>({
   label,
   id,
   register,
   error,
+  defaultValue = '',
   ...inputProps
 }: TextInputProps<TFieldValues>): JSX.Element => {
   return (
@@ -24,6 +26,7 @@ const TextInput = <TFieldValues extends FieldValues>({
         className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
           error ? 'border-red-500' : 'border-gray-300'
         }`}
+        defaultValue={defaultValue}
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error && 'firstname-error'}
         {...register(id)}

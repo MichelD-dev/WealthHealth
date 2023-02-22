@@ -14,10 +14,19 @@ import {
   FilterFn,
 } from '@tanstack/react-table'
 import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
-import {useEffect, useMemo, useState} from 'react'
-import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
+import {Suspense, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  EmployeeSchema,
+  EmployeeWithAddressSchemaType,
+} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
 import {Employee} from '@/types/types'
+import {Modal} from '@/components/Modal'
+import {ModalRef} from '@/components/Modal/Modal'
+import TextInput from '@/components/formInputs/InputField'
+import Dropdown from '@/components/Dropdown/Dropdown'
+import {zodResolver} from '@hookform/resolvers/zod'
+import {SubmitHandler, useForm, Controller} from 'react-hook-form'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -31,6 +40,14 @@ declare module '@tanstack/table-core' {
 const deleteEmployee = async (employeeId: number) => {
   try {
     await supabase.from('employees').delete().match({id: employeeId})
+  } catch (error) {
+    console.log('error', error)
+  }
+}
+
+const updateEmployee = async (employeeId: number) => {
+  try {
+    // await supabase.from('employees').update().match({id: employeeId})
   } catch (error) {
     console.log('error', error)
   }
@@ -57,6 +74,22 @@ const List = () => {
   const [globalFilter, setGlobalFilter] = useState('')
   const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
   const [employees, setEmployees] = useState<Partial<Employee>[]>([])
+  const [addressToEdit, setAddressToEdit] = useState<Partial<Employee> | null>(
+    null,
+  )
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setFocus,
+    reset,
+    control,
+    formState,
+    formState: {errors, isSubmitting, isSubmitSuccessful},
+  } = useForm<Partial<EmployeeWithAddressSchemaType>>({
+    resolver: useMemo(() => zodResolver(EmployeeSchema), [EmployeeSchema]),
+  })
 
   const fetchEmployees = async () => {
     const {data, error} = await supabase
@@ -68,14 +101,14 @@ const List = () => {
     if (error) {
       setFetchError('Could not fetch the employees')
       setEmployees([])
-      console.log(error)
     }
     if (data) {
       setEmployees(data)
       setFetchError(null)
-      // console.log(data)
     }
   }
+
+  const modalRef = useRef<ModalRef>(null)
 
   useEffect(() => {
     fetchEmployees()
@@ -131,7 +164,32 @@ const List = () => {
         header: '',
         id: 'delete',
         cell: tableProps => (
-          <div className="m-auto w-fit">
+          <div className="flex gap-5 justify-evenly">
+            <button
+              onClick={() => {
+                updateEmployee(employees[tableProps.row.index].id as number)
+                modalRef.current?.open()
+                setAddressToEdit(employees[tableProps.row.index])
+                setEmployees(
+                  employees,
+                  // .filter(
+                  //     employee =>
+                  //       employee.id !== employees[tableProps.row.index].id,
+                  //   ),
+                )
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                width="0.75rem"
+              >
+                <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z" />
+              </svg>
+            </button>
             <button
               onClick={() => {
                 deleteEmployee(employees[tableProps.row.index].id as number)
@@ -212,6 +270,62 @@ const List = () => {
 
   return (
     <>
+      <Suspense>
+        <Modal ref={modalRef}>
+          <img
+            className="m-auto mt-4 mb-8"
+            src="https://user.oc-static.com/upload/2020/08/14/15974125765772_image2.jpg"
+            alt="Logo de Wealth Health"
+          />
+          <fieldset className="border border-solid border-gray-300 p-3 text-left">
+            <TextInput<Partial<EmployeeWithAddressSchemaType>>
+              label="Street"
+              id="street"
+              register={register}
+              error={errors.street?.message}
+              defaultValue={addressToEdit?.street ?? ''}
+            />
+            <TextInput<Partial<EmployeeWithAddressSchemaType>>
+              label="City"
+              id="city"
+              register={register}
+              error={errors.city?.message}
+              defaultValue={addressToEdit?.city ?? ''}
+            />
+            <Controller
+              name="state"
+              control={control}
+              render={({field: {onChange, onBlur, value}}) => (
+                <Dropdown
+                  label="State"
+                  labelclassname="block my-1"
+                  options={['Alabama', 'Ohio', 'Montana']}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                  defaultValue={addressToEdit?.state ?? value}
+                  className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+                />
+              )}
+            />
+            <TextInput<Partial<EmployeeWithAddressSchemaType>>
+              label="Zip Code"
+              id="zipcode"
+              register={register}
+              error={errors.firstname?.message}
+              defaultValue={addressToEdit?.zipcode ?? ''}
+            />
+          </fieldset>
+          <button
+            type="submit"
+            className={`w-full text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] mt-8 mb-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+              isSubmitting && 'disabled'
+            }`}
+            disabled={isSubmitting}
+          >
+            Save
+          </button>
+        </Modal>
+      </Suspense>
       <div className="container mx-auto">
         <div>
           <DebouncedInput
