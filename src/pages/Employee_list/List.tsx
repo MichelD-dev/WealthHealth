@@ -17,13 +17,7 @@ import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {useEffect, useMemo, useState} from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
-// import {getShape, getFields} from 'postgrest-js-tools'
-// import {Database} from '@/types/supabase'
 import {Employee} from '@/types/types'
-
-// const expectedShape = getShape<Database['public']['Tables']["employees"]["Row"]>()({
-//   firstname: true,
-// })
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -31,6 +25,14 @@ declare module '@tanstack/table-core' {
   }
   interface FilterMeta {
     itemRank: RankingInfo
+  }
+}
+
+const deleteEmployee = async (employeeId: number) => {
+  try {
+    await supabase.from('employees').delete().match({id: employeeId})
+  } catch (error) {
+    console.log('error', error)
   }
 }
 
@@ -49,38 +51,6 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 const columnHelper = createColumnHelper<EmployeeWithAddressSchemaType>()
 
-const columns = [
-  columnHelper.accessor('firstname', {
-    header: 'First Name',
-  }),
-  columnHelper.accessor(row => row.lastname, {
-    id: 'lastName',
-    header: 'Last Name',
-    cell: info => <strong>{info.getValue()}</strong>,
-  }),
-  columnHelper.accessor('startdate', {
-    header: 'Start Date',
-  }),
-  columnHelper.accessor('department', {
-    header: 'Department',
-  }),
-  columnHelper.accessor('birthdate', {
-    header: 'Birth Date',
-  }),
-  columnHelper.accessor('street', {
-    header: 'Street',
-  }),
-  columnHelper.accessor('city', {
-    header: 'City',
-  }),
-  columnHelper.accessor('state', {
-    header: 'State',
-  }),
-  columnHelper.accessor('zipcode', {
-    header: 'Zip Code',
-  }),
-]
-
 const List = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -88,28 +58,12 @@ const List = () => {
   const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
   const [employees, setEmployees] = useState<Partial<Employee>[]>([])
 
-  // function selectFromEmployees<F extends keyof Employee>(columns: F[]) {
-  //   return supabase.from<Pick<Employee, F>>('employees').select(columns.join(', '))
-  // }
-
   const fetchEmployees = async () => {
-    //   const {data, error} = await selectFromEmployees([
-    //     'firstname',
-    //     'lastname',
-    //     'startdate',
-    //     'department',
-    //     'birthdate',
-    //     'street',
-    //     'city',
-    //     'state',
-    //     'zipcode',
-    //   ])
     const {data, error} = await supabase
       .from('employees')
       .select(
-        'firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
+        'id, firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
       )
-    // .limit(10)
 
     if (error) {
       setFetchError('Could not fetch the employees')
@@ -126,6 +80,87 @@ const List = () => {
   useEffect(() => {
     fetchEmployees()
   }, [])
+
+  // const tableData = useMemo(
+  //   () => (!employees ? Array(30).fill({}) : employees),
+  //   [employees],
+  // )
+  // const tableColumns = useMemo(
+  //   () =>
+  //     !employees
+  //       ? columns.map(column => ({
+  //           ...column,
+  //           Cell: <p>loading</p>,
+  //         }))
+  //       : columns,
+  //   [columns],
+  // )
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('firstname', {
+        header: 'First Name',
+      }),
+      columnHelper.accessor(row => row.lastname, {
+        id: 'lastName',
+        header: 'Last Name',
+        cell: info => <strong>{info.getValue()}</strong>,
+      }),
+      columnHelper.accessor('startdate', {
+        header: 'Start Date',
+      }),
+      columnHelper.accessor('department', {
+        header: 'Department',
+      }),
+      columnHelper.accessor('birthdate', {
+        header: 'Birth Date',
+      }),
+      columnHelper.accessor('street', {
+        header: 'Street',
+      }),
+      columnHelper.accessor('city', {
+        header: 'City',
+      }),
+      columnHelper.accessor('state', {
+        header: 'State',
+      }),
+      columnHelper.accessor('zipcode', {
+        header: 'Zip Code',
+      }),
+      columnHelper.accessor(() => 'delete', {
+        header: '',
+        id: 'delete',
+        cell: tableProps => (
+          <button
+            onClick={() => {
+              deleteEmployee(employees[tableProps.row.index].id as number)
+              setEmployees(
+                employees.filter(
+                  employee =>
+                    employee.id !== employees[tableProps.row.index].id,
+                ),
+              )
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              width="0.75rem"
+            >
+              <path
+                fill="currentColor"
+                d="M32 464C32 490.5 53.5 512 80 512h288c26.5 0 48-21.5 48-48V128H32V464zM304 208C304 199.1 311.1 192 320 192s16 7.125 16 16v224c0 8.875-7.125 16-16 16s-16-7.125-16-16V208zM208 208C208 199.1 215.1 192 224 192s16 7.125 16 16v224c0 8.875-7.125 16-16 16s-16-7.125-16-16V208zM112 208C112 199.1 119.1 192 128 192s16 7.125 16 16v224C144 440.9 136.9 448 128 448s-16-7.125-16-16V208zM432 32H320l-11.58-23.16c-2.709-5.42-8.25-8.844-14.31-8.844H153.9c-6.061 0-11.6 3.424-14.31 8.844L128 32H16c-8.836 0-16 7.162-16 16V80c0 8.836 7.164 16 16 16h416c8.838 0 16-7.164 16-16V48C448 39.16 440.8 32 432 32z"
+              />
+            </svg>
+          </button>
+        ),
+      }),
+    ],
+    [employees],
+  )
 
   const tableData = useMemo(() => employees, [employees])
   const tableColumns = useMemo(() => columns, [columns])
