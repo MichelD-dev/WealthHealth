@@ -22,8 +22,8 @@ import {ModalRef} from '@/components/Modal/Modal'
 import Dropdown from '@/components/Dropdown/Dropdown'
 
 import {Modal} from '../../../lib/dist'
-import TextInput from '@/components/formInputs/InputField'
 import DateInput from '@/components/formInputs/DateInput'
+import TextInput from '@/components/formInputs/InputField'
 
 // import {Modal} from 'md-modal'
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
@@ -61,7 +61,7 @@ const Form = () => {
       console.log(employee)
       try {
         const {status} = await supabase
-          .from('emplyees')
+          .from('employees')
           .insert(employee)
           .select('birthdate')
 
@@ -143,6 +143,7 @@ const Form = () => {
                     <span>Address</span>
                   </label>
                 </div>
+
                 {address && (
                   <fieldset className="border border-solid border-gray-300 p-3">
                     <TextInput<EmployeeWithAddressSchemaType>
@@ -172,29 +173,12 @@ const Form = () => {
                         />
                       )}
                     />
-                    <div>
-                      <label htmlFor="zipcode" className="block my-1">
-                        Zip Code
-                      </label>
-                      <input
-                        type="text"
-                        id="zipcode"
-                        className={`bg-gray-50 border  text-gray-900 sm:text-sm rounded-lg block w-full p-2.5 focus:outline-none ${
-                          errors.zipcode ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        aria-invalid={errors.zipcode ? 'true' : 'false'}
-                        aria-describedby={errors.zipcode && 'zipcode-error'}
-                        {...register('zipcode', {shouldUnregister: true})}
-                      />
-                      {errors.zipcode && (
-                        <span
-                          id="zipcode-error"
-                          className="text-red-600 block mt-2 text-right"
-                        >
-                          {errors.zipcode?.message}
-                        </span>
-                      )}
-                    </div>
+                    <TextInput<EmployeeWithAddressSchemaType>
+                      label="Zip Code"
+                      id="zipcode"
+                      register={register}
+                      error={errors.firstname?.message}
+                    />
                   </fieldset>
                 )}
                 <Controller

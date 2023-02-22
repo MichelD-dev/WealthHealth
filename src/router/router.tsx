@@ -1,16 +1,30 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
+  Navigate,
   Route,
+  useLocation,
 } from 'react-router-dom'
 import {Suspense, lazy} from 'react'
 import App from '@/App'
 import Spinner from '@/components/Spinner/Spinner'
+import {useAuth} from '@/context/AuthProvider'
 
 const Form = lazy(() => import('@/pages/Employee_creation/creation'))
 const LoginForm = lazy(() => import('@/pages/Login/Login'))
 const List = lazy(() => import('@/pages/Employee_list/List'))
 const Error404 = lazy(() => import('@/pages/error404/Error404'))
+
+function RequireAuth({children}: {children: JSX.Element}) {
+  const {user} = useAuth()
+  const location = useLocation()
+
+  if (!user) {
+    return <Navigate to="/" state={{from: location}} replace />
+  }
+
+  return children
+}
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,17 +40,21 @@ const router = createBrowserRouter(
       <Route
         path="create"
         element={
-          <Suspense fallback={<Spinner />}>
-            <Form />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Spinner />}>
+              <Form />
+            </Suspense>
+          </RequireAuth>
         }
       />
       <Route
         path="list"
         element={
-          <Suspense fallback={<Spinner />}>
-            <List />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Spinner />}>
+              <List />
+            </Suspense>
+          </RequireAuth>
         }
       />
       <Route

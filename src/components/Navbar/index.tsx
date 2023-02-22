@@ -1,18 +1,8 @@
 import supabase from '@/config/supabaseClient'
-import {NavLink, useLocation, useNavigate} from 'react-router-dom'
+import {NavLink, useLocation} from 'react-router-dom'
 
 const Navbar = () => {
   const {pathname} = useLocation()
-
-  const navigate = useNavigate()
-
-  supabase.auth.onAuthStateChange(async event => {
-    if (event !== 'SIGNED_OUT') {
-      navigate('/list')
-    } else {
-      navigate('/')
-    }
-  })
 
   const signOut = async () => await supabase.auth.signOut()
 
@@ -20,15 +10,12 @@ const Navbar = () => {
     <>
       <nav className="font-sans flex flex-col text-center sm:flex-row sm:text-left sm:justify-between py-4 px-6 bg-white shadow sm:items-baseline w-full">
         <div className="mb-2 sm:mb-0">
-          <a
-            href="/"
-            className="text-2xl no-underline text-grey-darkest hover:text-blue-dark"
-          >
+          <div className="text-2xl no-underline text-grey-darkest hover:text-blue-dark select-none">
             HRnet
-          </a>
+          </div>
         </div>
         {pathname === '/create' && (
-          <ul className="flex flex-row gap-10 mr-5 list-none">
+          <ul className="flex flex-row gap-5 mr-5 list-none">
             <li className="list-none">
               <NavLink
                 to="/list"
@@ -49,7 +36,7 @@ const Navbar = () => {
           </ul>
         )}
         {pathname === '/list' && (
-          <ul className="flex flex-row gap-10 mr-5 list-none">
+          <ul className="flex flex-row gap-5 mr-5 list-none">
             <li className="list-none">
               <NavLink
                 to="/create"
