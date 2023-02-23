@@ -1,16 +1,22 @@
 import convertLocalToUTCDate from '@/utils/timeconverter'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {Controller, FieldValues, Path} from 'react-hook-form'
+import {
+  Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
+  Control,
+} from 'react-hook-form'
 
-interface IProps<TFieldValues> {
+interface IProps<TFieldValues extends FieldValues> {
   label: string
   fieldName: Path<TFieldValues>
-  control: any
-  errors: any
+  control: Control<TFieldValues>
+  errors: FieldErrors<TFieldValues>
 }
 
-function DateInput<TFieldValues>({
+function DateInput<TFieldValues extends FieldValues>({
   label,
   fieldName,
   control,
@@ -50,7 +56,7 @@ function DateInput<TFieldValues>({
           id={`${fieldName}-error`}
           className="text-red-600 block mt-2 text-right"
         >
-          {errors[fieldName]?.message}
+          {errors[fieldName]?.message as string}
         </span>
       )}
     </div>

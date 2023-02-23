@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -9,7 +10,7 @@ import {createPortal} from 'react-dom'
 import {useModal} from './useModal'
 
 interface ModalProps {
-  children: React.ReactNode
+  children: ReactNode
   defaultOpened?: boolean
 }
 
