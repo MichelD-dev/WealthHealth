@@ -15,13 +15,13 @@ const ModalForm = ({
   addressToEdit,
   setAddressToEdit,
   setIsEditModalShown,
+  setFetchError,
 }: {
   addressToEdit: Partial<Employee>
   setAddressToEdit: Dispatch<SetStateAction<Partial<Employee>>>
   setIsEditModalShown: (arg: boolean) => void
+  setFetchError: (arg: string | null) => void
 }) => {
-  const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
-
   const {register, handleSubmit, control} = useForm<employeeEditSchemaType>({
     resolver: zodResolver(employeeEditSchema),
   })
@@ -38,7 +38,7 @@ const ModalForm = ({
       )
 
     if (error) {
-      setFetchError('Could not fetch the employees')
+      setFetchError('An error occurred. Please try again later.')
     }
 
     if (status === 200) {

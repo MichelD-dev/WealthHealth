@@ -15,13 +15,11 @@ import {
   useState,
 } from 'react'
 import supabase from '@/config/supabaseClient'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import convertLocalToUTCDate from '@/utils/timeconverter'
 import {ModalRef} from '@/components/Modal/Modal'
 import Dropdown from '@/components/Dropdown/Dropdown'
 
-import {Modal} from '../../../lib/dist'
+import {Modal} from '@/components/Modal'
+// import {Modal} from '../../../lib/dist'
 import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
 

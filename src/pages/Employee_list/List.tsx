@@ -22,19 +22,11 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  EmployeeSchema,
-  EmployeeSchemaType,
-  EmployeeWithAddressSchemaType,
-} from '@/types/employee.model'
+import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
 import {Employee} from '@/types/types'
 import {Modal} from '@/components/Modal'
 import {ModalRef} from '@/components/Modal/Modal'
-import TextInput from '@/components/formInputs/InputField'
-import Dropdown from '@/components/Dropdown/Dropdown'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {SubmitHandler, useForm, Controller} from 'react-hook-form'
 import ModalForm from '@/components/ModalForm/ModalForm'
 
 declare module '@tanstack/table-core' {
@@ -79,6 +71,7 @@ const List = () => {
   const [isEditModalShown, setIsEditModalShown] = useState(false)
 
   const modalRef = useRef<ModalRef>(null)
+  const errorModalRef = useRef<ModalRef>(null)
   // console.log(addressToEdit)
   const fetchEmployees = async () => {
     const {data, error} = await supabase
@@ -105,6 +98,12 @@ const List = () => {
   useEffect(() => {
     !isEditModalShown && modalRef.current?.close()
   }, [isEditModalShown])
+
+  useEffect(() => {
+    setTimeout(() => {
+      errorModalRef.current?.open()
+    }, 0)
+  }, [fetchError])
 
   const columns = useMemo(
     () => [
@@ -249,16 +248,17 @@ const List = () => {
 
   return (
     <>
-      {/* {fetchError && (
-        <Modal ref={modalRef}>
-          <p>{fetchError}</p>  
-        </Modal> 
-      )} */}
+      {fetchError && (
+        <Modal ref={errorModalRef}>
+          <p>{fetchError}</p>
+        </Modal>
+      )}
       <Modal ref={modalRef}>
         <ModalForm
           addressToEdit={addressToEdit}
           setAddressToEdit={setAddressToEdit}
           setIsEditModalShown={setIsEditModalShown}
+          setFetchError={setFetchError}
         />
       </Modal>
       <div className="container mx-auto">
