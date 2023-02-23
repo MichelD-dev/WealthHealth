@@ -59,25 +59,23 @@ const Form = () => {
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
     async employee => {
       console.log(employee)
-      try {
-        const {status} = await supabase
-          .from('employees')
-          .insert(employee)
-          .select('birthdate')
+      // try {
+      const {status} = await supabase
+        .from('employees')
+        .insert(employee)
+        .select('birthdate')
 
-        if (status === 201) {
-          setFetchError(null)
-          modalRef.current?.open()
-        }
-
-        if (status === 404) {
-          setFetchError('The requested resource could not be found.')
-          modalRef.current?.open()
-        }
-      } catch (error) {
+      if (status === 201) {
+        setFetchError(null)
+        modalRef.current?.open()
+      } else {
         setFetchError('An error occurred. Please try again later.')
         modalRef.current?.open()
       }
+      // } catch (error) {
+      //   setFetchError('An error occurred. Please try again later.')
+      //   modalRef.current?.open()
+      // }
     },
     [],
   )
@@ -86,9 +84,7 @@ const Form = () => {
 
   return (
     <>
-      <Suspense>
-        <Modal ref={modalRef}>{fetchError ?? 'Employee Created!'}</Modal>
-      </Suspense>
+      <Modal ref={modalRef}>{fetchError ?? 'Employee Created!'}</Modal>
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 absolute top-20">

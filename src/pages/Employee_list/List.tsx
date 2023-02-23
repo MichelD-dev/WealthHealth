@@ -14,9 +14,17 @@ import {
   FilterFn,
 } from '@tanstack/react-table'
 import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
-import {Suspense, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   EmployeeSchema,
+  EmployeeSchemaType,
   EmployeeWithAddressSchemaType,
 } from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
@@ -27,6 +35,7 @@ import TextInput from '@/components/formInputs/InputField'
 import Dropdown from '@/components/Dropdown/Dropdown'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {SubmitHandler, useForm, Controller} from 'react-hook-form'
+import ModalForm from '@/components/ModalForm/ModalForm'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -40,14 +49,6 @@ declare module '@tanstack/table-core' {
 const deleteEmployee = async (employeeId: number) => {
   try {
     await supabase.from('employees').delete().match({id: employeeId})
-  } catch (error) {
-    console.log('error', error)
-  }
-}
-
-const updateEmployee = async (employeeId: number) => {
-  try {
-    // await supabase.from('employees').update().match({id: employeeId})
   } catch (error) {
     console.log('error', error)
   }
@@ -73,24 +74,12 @@ const List = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
-  const [employees, setEmployees] = useState<Partial<Employee>[]>([])
-  const [addressToEdit, setAddressToEdit] = useState<Partial<Employee> | null>(
-    null,
-  )
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [addressToEdit, setAddressToEdit] = useState<Partial<Employee>>({})
+  const [isEditModalShown, setIsEditModalShown] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setFocus,
-    reset,
-    control,
-    formState,
-    formState: {errors, isSubmitting, isSubmitSuccessful},
-  } = useForm<Partial<EmployeeWithAddressSchemaType>>({
-    resolver: useMemo(() => zodResolver(EmployeeSchema), [EmployeeSchema]),
-  })
-
+  const modalRef = useRef<ModalRef>(null)
+  // console.log(addressToEdit)
   const fetchEmployees = async () => {
     const {data, error} = await supabase
       .from('employees')
@@ -104,30 +93,18 @@ const List = () => {
     }
     if (data) {
       setEmployees(data)
+      // console.log(data)
       setFetchError(null)
     }
   }
 
-  const modalRef = useRef<ModalRef>(null)
-
   useEffect(() => {
     fetchEmployees()
-  }, [])
+  }, [addressToEdit])
 
-  // const tableData = useMemo(
-  //   () => (!employees ? Array(30).fill({}) : employees),
-  //   [employees],
-  // )
-  // const tableColumns = useMemo(
-  //   () =>
-  //     !employees
-  //       ? columns.map(column => ({
-  //           ...column,
-  //           Cell: <p>loading</p>,
-  //         }))
-  //       : columns,
-  //   [columns],
-  // )
+  useEffect(() => {
+    !isEditModalShown && modalRef.current?.close()
+  }, [isEditModalShown])
 
   const columns = useMemo(
     () => [
@@ -167,16 +144,18 @@ const List = () => {
           <div className="flex gap-5 justify-evenly">
             <button
               onClick={() => {
-                updateEmployee(employees[tableProps.row.index].id as number)
-                modalRef.current?.open()
+                // console.log(employees[tableProps.row.index])
                 setAddressToEdit(employees[tableProps.row.index])
-                setEmployees(
-                  employees,
-                  // .filter(
-                  //     employee =>
-                  //       employee.id !== employees[tableProps.row.index].id,
-                  //   ),
-                )
+                modalRef.current?.open()
+                setIsEditModalShown(true)
+                // updateEmployee(employees[tableProps.row.index].id as number)
+                // setEmployees(
+                //   employees,
+                // .filter(
+                //     employee =>
+                //       employee.id !== employees[tableProps.row.index].id,
+                // ),
+                // )
               }}
             >
               <svg
@@ -270,62 +249,18 @@ const List = () => {
 
   return (
     <>
-      <Suspense>
+      {/* {fetchError && (
         <Modal ref={modalRef}>
-          <img
-            className="m-auto mt-4 mb-8"
-            src="https://user.oc-static.com/upload/2020/08/14/15974125765772_image2.jpg"
-            alt="Logo de Wealth Health"
-          />
-          <fieldset className="border border-solid border-gray-300 p-3 text-left">
-            <TextInput<Partial<EmployeeWithAddressSchemaType>>
-              label="Street"
-              id="street"
-              register={register}
-              error={errors.street?.message}
-              defaultValue={addressToEdit?.street ?? ''}
-            />
-            <TextInput<Partial<EmployeeWithAddressSchemaType>>
-              label="City"
-              id="city"
-              register={register}
-              error={errors.city?.message}
-              defaultValue={addressToEdit?.city ?? ''}
-            />
-            <Controller
-              name="state"
-              control={control}
-              render={({field: {onChange, onBlur, value}}) => (
-                <Dropdown
-                  label="State"
-                  labelclassname="block my-1"
-                  options={['Alabama', 'Ohio', 'Montana']}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  defaultValue={addressToEdit?.state ?? value}
-                  className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
-                />
-              )}
-            />
-            <TextInput<Partial<EmployeeWithAddressSchemaType>>
-              label="Zip Code"
-              id="zipcode"
-              register={register}
-              error={errors.firstname?.message}
-              defaultValue={addressToEdit?.zipcode ?? ''}
-            />
-          </fieldset>
-          <button
-            type="submit"
-            className={`w-full text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] mt-8 mb-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-              isSubmitting && 'disabled'
-            }`}
-            disabled={isSubmitting}
-          >
-            Save
-          </button>
-        </Modal>
-      </Suspense>
+          <p>{fetchError}</p>  
+        </Modal> 
+      )} */}
+      <Modal ref={modalRef}>
+        <ModalForm
+          addressToEdit={addressToEdit}
+          setAddressToEdit={setAddressToEdit}
+          setIsEditModalShown={setIsEditModalShown}
+        />
+      </Modal>
       <div className="container mx-auto">
         <div>
           <DebouncedInput
@@ -368,7 +303,6 @@ const List = () => {
               </tr>
             ))}
           </thead>
-          {fetchError && <p>{fetchError}</p> /*TODO à supprimer*/}
           <tbody>
             {getRowModel().rows.map(row => (
               <tr key={row.id}>

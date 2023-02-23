@@ -59,7 +59,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
           onClick={handleClick}
           className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-75"
         >
-          <div className="bg-white max-w-lg mx-auto rounded-lg drop-shadow-xl min-w-[40%] text-center">
+          <div className="bg-white max-w-lg mx-auto rounded-lg drop-shadow-xl  text-center">
             <div className="modal-header flex justify-end px-4 py-2 relative">
               <button
                 onClick={() => {
