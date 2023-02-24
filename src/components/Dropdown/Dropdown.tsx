@@ -1,44 +1,52 @@
-import {HTMLProps, useState} from 'react'
+import {ChangeEvent, HTMLProps, useEffect, useState} from 'react'
 
 type DropdownProps<T extends string | number | string[]> = {
   options: T[]
   label?: string
   onChange?: (value: T) => void
   labelclassname?: string
-  value?: T
+  defaultValue?: T
 } & HTMLProps<HTMLSelectElement>
 
 const Dropdown = <T extends string | number | string[]>({
   options,
   label,
+  defaultValue,
   onChange,
   ...props
 }: DropdownProps<T>) => {
-  const [selectedValue, setSelectedValue] = useState<T>(options[0])
+  const [selectedValue, setSelectedValue] = useState<T>(
+    defaultValue ?? options[0],
+  )
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const selectedIndex = event.target.selectedIndex
     setSelectedValue(options[selectedIndex])
-    if (onChange) {
-      onChange(options[selectedIndex])
-    }
   }
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(selectedValue)
+    }
+  }, [selectedValue])
 
   return (
     <div>
       {label && (
-        <label htmlFor={label} className={props.labelclassname}>
+        <label htmlFor={label} className={props?.labelclassname}>
           {label}
         </label>
       )}
       <select
         name={label}
-        value={selectedValue}
         onChange={handleSelectChange}
+        value={defaultValue ?? selectedValue}
+        role="listbox"
+        aria-labelledby={label}
         {...props}
       >
         {options.map(option => (
-          <option key={JSON.stringify(option)} value={option}>
+          <option key={option.toString()} value={option} role="option">
             {option}
           </option>
         ))}
