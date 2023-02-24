@@ -22,6 +22,7 @@ import {Modal} from '@/components/Modal'
 // import {Modal} from '../../../lib/dist'
 import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
+import AddressToggle from '@/components/formInputs/AddressToggle'
 
 // import {Modal} from 'md-modal'
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
@@ -57,11 +58,8 @@ const Form = () => {
   const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
     async employee => {
       console.log(employee)
-      // try {
-      const {status} = await supabase
-        .from('employees')
-        .insert(employee)
-        .select('birthdate')
+
+      const {status} = await supabase.from('employees').insert(employee)
 
       if (status === 201) {
         setFetchError(null)
@@ -70,10 +68,6 @@ const Form = () => {
         setFetchError('An error occurred. Please try again later.')
         modalRef.current?.open()
       }
-      // } catch (error) {
-      //   setFetchError('An error occurred. Please try again later.')
-      //   modalRef.current?.open()
-      // }
     },
     [],
   )
@@ -108,13 +102,13 @@ const Form = () => {
                   error={errors.lastname?.message}
                 />
                 <TextInput<EmployeeWithAddressSchemaType>
-                  label="Your email"
+                  label="Your Email"
                   id="email"
                   register={register}
                   error={errors.email?.message}
                 />
                 <DateInput
-                  label="Date of birth"
+                  label="Date of Birth"
                   fieldName="birthdate"
                   control={control}
                   errors={errors}
@@ -125,19 +119,7 @@ const Form = () => {
                   control={control}
                   errors={errors}
                 />
-
-                <div className="flex align-bottom">
-                  <label className="block my-1">
-                    <input
-                      className="mt-[0.3rem] mr-2 h-3.5 w-8 appearance-none rounded-[0.4375rem] bg-[rgba(0,0,0,0.25)] outline-none before:pointer-events-none before:absolute before:h-3.5 before:w-3.5 before:rounded-full before:bg-transparent before:content-[''] after:absolute after:z-[2] after:-mt-[0.1875rem] after:h-5 after:w-5 after:rounded-full after:border-none after:bg-white after:shadow-[0_0px_3px_0_rgb(0_0_0_/_7%),_0_2px_2px_0_rgb(0_0_0_/_4%)] after:transition-[background-color_0.2s,transform_0.2s] after:content-[''] checked:bg-primary checked:after:absolute checked:after:z-[2] checked:after:-mt-[3px] checked:after:ml-[1.0625rem] checked:after:h-5 checked:after:w-5 checked:after:rounded-full checked:after:border-none checked:after:bg-primary checked:after:shadow-[0_3px_1px_-2px_rgba(0,0,0,0.2),_0_2px_2px_0_rgba(0,0,0,0.14),_0_1px_5px_0_rgba(0,0,0,0.12)] checked:after:transition-[background-color_0.2s,transform_0.2s] checked:after:content-[''] hover:cursor-pointer focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[3px_-1px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] focus:after:absolute focus:after:z-[1] focus:after:block focus:after:h-5 focus:after:w-5 focus:after:rounded-full focus:after:content-[''] checked:focus:border-primary checked:focus:bg-primary checked:focus:before:ml-[1.0625rem] checked:focus:before:scale-100 checked:focus:before:shadow-[3px_-1px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s]"
-                      type="checkbox"
-                      role="switch"
-                      {...register('address')}
-                    />
-                    <span>Address</span>
-                  </label>
-                </div>
-
+                <AddressToggle register={register} />
                 {address && (
                   <fieldset className="border border-solid border-gray-300 p-3">
                     <TextInput<EmployeeWithAddressSchemaType>
@@ -191,7 +173,7 @@ const Form = () => {
                       ]}
                       onChange={onChange}
                       onBlur={onBlur}
-                      defaultValue="Marketing"
+                      // defaultValue="Marketing"//FIXME
                       className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                     />
                   )}
