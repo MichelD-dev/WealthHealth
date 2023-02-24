@@ -50,18 +50,35 @@ export const EmployeeSchema = z.discriminatedUnion('address', [
   EmployeeWithAddressSchema,
 ])
 
-export const employeeEditSchema = AddressSchema.omit({address: true})
-  .extend({
-    lastname: z.string().trim().min(1, {message: 'Last name is required'}),
-    department: z.enum([
-      'Sales',
-      'Marketing',
-      'Engineering',
-      'Human Ressources',
-      'Legal',
-    ]),
-  })
-  .partial()
+export const employeeEditSchema = z.object({
+  lastname: z.string().trim().min(1, {message: 'Last name is required'}),
+  department: z.enum([
+    'Sales',
+    'Marketing',
+    'Engineering',
+    'Human Ressources',
+    'Legal',
+  ]),
+  street: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.enum(['Alabama', 'Ohio', 'Montana']),
+  zipcode: z.string().trim().optional(),
+})
+
+// export const employeeEditSchema = AddressSchema.omit({address: true})
+//   .extend({
+//     department: z.enum([
+//       'Sales',
+//       'Marketing',
+//       'Engineering',
+//       'Human Ressources',
+//       'Legal',
+//     ]),
+//   })
+//   .partial()
+//   .extend({
+//     lastname: z.string().trim().min(1, {message: 'Last name is required'}),
+//   })
 
 export type EmployeeSchemaType = z.infer<typeof EmployeeSchema>
 export type EmployeeWithAddressSchemaType = z.infer<

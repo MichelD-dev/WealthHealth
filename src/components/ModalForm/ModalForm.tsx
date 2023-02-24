@@ -2,50 +2,64 @@ import supabase from '@/config/supabaseClient'
 import {
   employeeEditSchema,
   employeeEditSchemaType,
-  EmployeeWithAddressSchemaType,
 } from '@/types/employee.model'
 import {Employee} from '@/types/types'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {Dispatch, SetStateAction, useCallback, useState} from 'react'
+import {
+  Dispatch,
+  DispatchWithoutAction,
+  SetStateAction,
+  useCallback,
+} from 'react'
 import {useForm, Controller} from 'react-hook-form'
 import Dropdown from '../Dropdown/Dropdown'
 import TextInput from '../formInputs/InputField'
 
 const ModalForm = ({
   addressToEdit,
-  setAddressToEdit,
-  setIsEditModalShown,
+  setEmployees,
+  employees,
   setFetchError,
+  closeModal,
+  setEdited,
 }: {
-  addressToEdit: Partial<Employee>
-  setAddressToEdit: Dispatch<SetStateAction<Partial<Employee>>>
-  setIsEditModalShown: (arg: boolean) => void
-  setFetchError: (arg: string | null) => void
+  addressToEdit: Partial<Employee> | null
+  setEmployees: Dispatch<React.SetStateAction<Employee[]>>
+  employees: Employee[]
+  setFetchError: Dispatch<SetStateAction<string | null>>
+  closeModal: () => void
+  setEdited: DispatchWithoutAction
 }) => {
-  const {register, handleSubmit, control} = useForm<employeeEditSchemaType>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: {errors},
+  } = useForm<Partial<employeeEditSchemaType>>({
     resolver: zodResolver(employeeEditSchema),
   })
 
-  const onSubmit = useCallback(async (newData: Partial<Employee>) => {
-    setAddressToEdit({...addressToEdit, ...newData}) //TODO à verif
+  const onSubmit = useCallback(
+    async (newData: Partial<employeeEditSchemaType>) => {
+      const {status, error} = await supabase
+        .from('employees')
+        .update(newData)
+        .match({id: addressToEdit?.id})
 
-    const {status, error} = await supabase
-      .from('employees')
-      .update(newData)
-      .match({id: addressToEdit.id})
-      .select(
-        'id, firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
-      )
+      if (error) {
+        setFetchError('An error occurred. Please try again later.')
+      }
 
-    if (error) {
-      setFetchError('An error occurred. Please try again later.')
-    }
-
-    if (status === 200) {
-      setFetchError(null)
-      setIsEditModalShown(false)
-    }
-  }, [])
+      if (status === 204) {
+        setEmployees({...employees, ...addressToEdit})
+        setFetchError(null)
+        closeModal()
+        setEdited()
+      }
+    },
+    [],
+  )
 
   return (
     <>
@@ -54,11 +68,12 @@ const ModalForm = ({
       </h2>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <fieldset className="border border-solid border-gray-300 p-3 text-left w-96 m-auto">
-          <TextInput<Partial<EmployeeWithAddressSchemaType>>
+          <TextInput<Partial<employeeEditSchemaType>>
             label="Last Name"
             id="lastname"
             register={register}
             defaultValue={addressToEdit?.lastname ?? ''}
+            error={errors.lastname?.message}
           />
           <Controller
             name="department"
@@ -76,18 +91,18 @@ const ModalForm = ({
                 ]}
                 onChange={onChange}
                 onBlur={onBlur}
-                defaultValue="Marketing"
+                // defaultValue="Marketing"
                 className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               />
             )}
           />
-          <TextInput<Partial<EmployeeWithAddressSchemaType>>
+          <TextInput<Partial<employeeEditSchemaType>>
             label="Street"
             id="street"
             register={register}
             defaultValue={addressToEdit?.street ?? ''}
           />
-          <TextInput<Partial<EmployeeWithAddressSchemaType>>
+          <TextInput<Partial<employeeEditSchemaType>>
             label="City"
             id="city"
             register={register}
@@ -103,26 +118,40 @@ const ModalForm = ({
                 options={['Alabama', 'Ohio', 'Montana']}
                 onChange={onChange}
                 onBlur={onBlur}
-                defaultValue={addressToEdit?.state ?? value}
+                // defaultValue={addressToEdit?.state ?? value}
                 className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               />
             )}
           />
-          <TextInput<Partial<EmployeeWithAddressSchemaType>>
+          <TextInput<Partial<employeeEditSchemaType>>
             label="Zip Code"
             id="zipcode"
             register={register}
             defaultValue={addressToEdit?.zipcode ?? ''}
           />
         </fieldset>
-        <button
-          type="submit"
-          className={
-            'text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] mt-8 mb-4 w-96 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
-          }
-        >
-          Save
-        </button>
+        <div className="flex gap-10 w-96">
+          <button
+            type="submit"
+            className={
+              'text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] mt-8 mb-4 w-96 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              // reset()//FIXME
+              closeModal()
+            }}
+            className={
+              'text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] mt-8 mb-4 w-96 font-medium rounded-lg text-sm px-5 py-2.5 text-center'
+            }
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </>
   )

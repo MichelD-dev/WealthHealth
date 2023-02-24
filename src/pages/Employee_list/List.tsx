@@ -19,15 +19,20 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
 import {Employee} from '@/types/types'
-import {Modal} from '@/components/Modal'
 import {ModalRef} from '@/components/Modal/Modal'
 import ModalForm from '@/components/ModalForm/ModalForm'
+// import {Modal} from '@/components/Modal'
+
+import {Modal} from '../../../lib/dist'
+import useMutationObserver from '@/hooks/useMutationObserver'
+// import {Modal} from 'md-modal'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -46,6 +51,7 @@ const deleteEmployee = async (employeeId: number) => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -65,14 +71,16 @@ const List = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [fetchError, setFetchError] = useState<string | null>(null) //TODO affichage avec modale
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [employees, setEmployees] = useState<Employee[]>([])
-  const [addressToEdit, setAddressToEdit] = useState<Partial<Employee>>({})
-  const [isEditModalShown, setIsEditModalShown] = useState(false)
+  const [addressToEdit, setAddressToEdit] = useState<Partial<Employee> | null>(
+    null,
+  )
+  const [edited, setEdited] = useReducer(state => !state, false)
 
   const modalRef = useRef<ModalRef>(null)
   const errorModalRef = useRef<ModalRef>(null)
-  // console.log(addressToEdit)
+
   const fetchEmployees = async () => {
     const {data, error} = await supabase
       .from('employees')
@@ -90,14 +98,22 @@ const List = () => {
       setFetchError(null)
     }
   }
+  // console.log(modalRef.current)
+  const closeModal = () => {
+    // setAddressToEdit(null)
+    modalRef.current?.close()
+  }
+
+  useEffect(() => {
+    console.log(modalRef.current)
+    if (!modalRef.current) {
+      setAddressToEdit(null)
+    }
+  }, [modalRef.current])
 
   useEffect(() => {
     fetchEmployees()
-  }, [addressToEdit])
-
-  useEffect(() => {
-    !isEditModalShown && modalRef.current?.close()
-  }, [isEditModalShown])
+  }, [edited])
 
   useEffect(() => {
     setTimeout(() => {
@@ -105,15 +121,27 @@ const List = () => {
     }, 0)
   }, [fetchError])
 
+  // useMutationObserver(mutation => mutation.addedNodes,   setAddressToEdit(null))
+
   const columns = useMemo(
     () => [
-      columnHelper.accessor('firstname', {
+      columnHelper.accessor(row => row.firstname, {
+        id: 'firstName',
         header: 'First Name',
+        cell: info => (
+          <p>
+            {info.getValue().charAt(0).toUpperCase() + info.getValue().slice(1)}
+          </p>
+        ),
       }),
       columnHelper.accessor(row => row.lastname, {
         id: 'lastName',
         header: 'Last Name',
-        cell: info => <strong>{info.getValue()}</strong>,
+        cell: info => (
+          <strong>
+            {info.getValue().charAt(0).toUpperCase() + info.getValue().slice(1)}
+          </strong>
+        ),
       }),
       columnHelper.accessor('startdate', {
         header: 'Start Date',
@@ -143,18 +171,12 @@ const List = () => {
           <div className="flex gap-5 justify-evenly">
             <button
               onClick={() => {
-                // console.log(employees[tableProps.row.index])
-                setAddressToEdit(employees[tableProps.row.index])
+                setTimeout(() => {
+                  //FIXME
+                  // setIsEditModalShown(true)
+                  setAddressToEdit(employees[tableProps.row.index])
+                }, 0)
                 modalRef.current?.open()
-                setIsEditModalShown(true)
-                // updateEmployee(employees[tableProps.row.index].id as number)
-                // setEmployees(
-                //   employees,
-                // .filter(
-                //     employee =>
-                //       employee.id !== employees[tableProps.row.index].id,
-                // ),
-                // )
               }}
             >
               <svg
@@ -256,19 +278,36 @@ const List = () => {
       <Modal ref={modalRef}>
         <ModalForm
           addressToEdit={addressToEdit}
-          setAddressToEdit={setAddressToEdit}
-          setIsEditModalShown={setIsEditModalShown}
+          setEmployees={setEmployees}
+          employees={employees}
           setFetchError={setFetchError}
+          closeModal={closeModal}
+          setEdited={setEdited}
         />
       </Modal>
       <div className="container mx-auto">
-        <div>
-          <DebouncedInput
-            value={globalFilter ?? ''}
-            onChange={value => setGlobalFilter(String(value))}
-            className="p-2 font-lg shadow border border-block relative my-6"
-            placeholder="Search..."
-          />
+        <div className="flex w-full justify-between px-2">
+          <div>
+            <DebouncedInput
+              value={globalFilter ?? ''}
+              onChange={value => setGlobalFilter(String(value))}
+              className="p-2 font-lg shadow border border-block relative my-6"
+              placeholder="Search..."
+            />
+          </div>
+          <select
+            value={getState().pagination.pageSize}
+            className="p-2 font-lg shadow border border-block relative my-6 cursor-pointer"
+            onChange={e => {
+              setPageSize(Number(e.target.value))
+            }}
+          >
+            {[5, 10, 25, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
         </div>
         <table className="table-auto w-full">
           <thead className="text-[#96b400] bg-gray-100">
@@ -319,41 +358,45 @@ const List = () => {
           </tbody>
         </table>
         <div className="h-8" />
-        <div className="flex items-center gap-2">
-          <button
-            className="border rounded p-1"
-            onClick={() => setPageIndex(0)}
-            disabled={!getCanPreviousPage()}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="border rounded p-1"
-            onClick={() => previousPage()}
-            disabled={!getCanPreviousPage()}
-          >
-            {'<'}
-          </button>
-          <button
-            className="border rounded p-1"
-            onClick={() => nextPage()}
-            disabled={!getCanNextPage()}
-          >
-            {'>'}
-          </button>
-          <button
-            className="border rounded p-1"
-            onClick={() => setPageIndex(getPageCount() - 1)}
-            disabled={!getCanNextPage()}
-          >
-            {'>>'}
-          </button>
-          <span className="flex items-center gap-1">
-            <div>Page</div>
-            <strong>
-              {getState().pagination.pageIndex + 1} of {getPageCount()}
-            </strong>
-          </span>
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2">
+            <button
+              className="border rounded p-1"
+              onClick={() => setPageIndex(0)}
+              disabled={!getCanPreviousPage()}
+            >
+              {'<<'}
+            </button>
+            <button
+              className="border rounded p-1"
+              onClick={() => previousPage()}
+              disabled={!getCanPreviousPage()}
+            >
+              {'<'}
+            </button>
+            <button
+              className="border rounded p-1"
+              onClick={() => nextPage()}
+              disabled={!getCanNextPage()}
+            >
+              {'>'}
+            </button>
+            <button
+              className="border rounded p-1"
+              onClick={() => setPageIndex(getPageCount() - 1)}
+              disabled={!getCanNextPage()}
+            >
+              {'>>'}
+            </button>
+          </div>
+          <div>
+            <span className="flex items-center gap-1">
+              <div>Page</div>
+              <strong>
+                {getState().pagination.pageIndex + 1} of {getPageCount()}
+              </strong>
+            </span>
+          </div>
           <span className="flex items-center gap-1">
             | Go to page:
             <input
@@ -366,18 +409,6 @@ const List = () => {
               className="border p-1 rounded w-16"
             />
           </span>
-          <select
-            value={getState().pagination.pageSize}
-            onChange={e => {
-              setPageSize(Number(e.target.value))
-            }}
-          >
-            {[5, 10, 25, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
     </>
