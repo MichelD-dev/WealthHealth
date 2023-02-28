@@ -21,7 +21,9 @@ const Login = () => {
         <header>
           <img
             className="m-auto"
-            src="https://user.oc-static.com/upload/2020/08/14/15974125765772_image2.jpg"
+            src="media/WealthHealth_logo.jpg"
+            width="300"
+            height="276"
             alt="Logo de Wealth Health"
           />
           <Auth

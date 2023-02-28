@@ -23,18 +23,22 @@ import {Modal} from '@/components/Modal'
 import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
 import AddressToggle from '@/components/formInputs/AddressToggle'
+import {useSupabase} from '@/api/useSupabase'
 
 // import {Modal} from 'md-modal'
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
 
 const Form = () => {
+  const [newEmployee, setNewEmployee] = useState<{
+    firstname: string
+    lastname: string
+  } | null>(null)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
   const {
     register,
     handleSubmit,
     watch,
-    setFocus,
     reset,
     control,
     formState,
@@ -44,10 +48,6 @@ const Form = () => {
   })
 
   useEffect(() => {
-    setFocus('firstname')
-  }, [setFocus])
-
-  useEffect(() => {
     if (isSubmitSuccessful) {
       reset()
     }
@@ -55,28 +55,31 @@ const Form = () => {
 
   const modalRef = useRef<ModalRef>(null)
 
-  const onSubmit = useCallback<SubmitHandler<EmployeeSchemaType>>(
-    async employee => {
-      console.log(employee)
+  const {createEmployee} = useSupabase()
 
-      const {status} = await supabase.from('employees').insert(employee)
+  const onSubmit: SubmitHandler<EmployeeWithAddressSchemaType> = async (
+    employee: EmployeeSchemaType,
+  ) => {
+    const {status, data} = await createEmployee(employee)
 
-      if (status === 201) {
-        setFetchError(null)
-        modalRef.current?.open()
-      } else {
-        setFetchError('An error occurred. Please try again later.')
-        modalRef.current?.open()
-      }
-    },
-    [],
-  )
+    if (status === 201) {
+      setFetchError(null)
+      setNewEmployee(data?.[0] ?? null)
+      modalRef.current?.open()
+    } else {
+      setFetchError('An error occurred. Please try again later.')
+      modalRef.current?.open()
+    }
+  }
 
   const address = watch('address')
 
   return (
     <>
-      <Modal ref={modalRef}>{fetchError ?? 'Employee Created!'}</Modal>
+      <Modal ref={modalRef}>
+        {fetchError ??
+          `${newEmployee?.firstname} ${newEmployee?.lastname} file created!`}
+      </Modal>
       <section>
         <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 absolute top-20">
@@ -92,6 +95,7 @@ const Form = () => {
                 <TextInput<EmployeeWithAddressSchemaType>
                   label="First Name"
                   id="firstname"
+                  autoFocus
                   register={register}
                   error={errors.firstname?.message}
                 />
@@ -116,6 +120,9 @@ const Form = () => {
                 <DateInput
                   label="Start Date"
                   fieldName="startdate"
+                  filterDate={date =>
+                    date.getDay() !== 6 && date.getDay() !== 0
+                  }
                   control={control}
                   errors={errors}
                 />

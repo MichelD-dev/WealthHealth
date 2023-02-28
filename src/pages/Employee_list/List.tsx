@@ -15,6 +15,7 @@ import {
 } from '@tanstack/react-table'
 import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {
+  MouseEvent,
   Suspense,
   useCallback,
   useEffect,
@@ -23,15 +24,19 @@ import {
   useRef,
   useState,
 } from 'react'
-import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
+import {
+  employeeEditSchemaType,
+  EmployeeWithAddressSchemaType,
+} from '@/types/employee.model'
 import supabase from '@/config/supabaseClient'
-import {Employee} from '@/types/types'
+import type {Employee} from '@/types/types'
 import {ModalRef} from '@/components/Modal/Modal'
 import ModalForm from '@/components/ModalForm/ModalForm'
-// import {Modal} from '@/components/Modal'
+import {Modal} from '@/components/Modal'
+import {useSupabase} from '@/api/useSupabase'
 
-import {Modal} from '../../../lib/dist'
-import useMutationObserver from '@/hooks/useMutationObserver'
+// import {Modal} from '../../../lib/dist'
+
 // import {Modal} from 'md-modal'
 
 declare module '@tanstack/table-core' {
@@ -40,14 +45,6 @@ declare module '@tanstack/table-core' {
   }
   interface FilterMeta {
     itemRank: RankingInfo
-  }
-}
-
-const deleteEmployee = async (employeeId: number) => {
-  try {
-    await supabase.from('employees').delete().match({id: employeeId})
-  } catch (error) {
-    console.log('error', error)
   }
 }
 
@@ -72,7 +69,8 @@ const List = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const [employees, setEmployees] = useState<Employee[]>([])
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [employees, setEmployees] = useState<Partial<Employee>[]>([])
   const [addressToEdit, setAddressToEdit] = useState<Partial<Employee> | null>(
     null,
   )
@@ -81,47 +79,35 @@ const List = () => {
   const modalRef = useRef<ModalRef>(null)
   const errorModalRef = useRef<ModalRef>(null)
 
-  const fetchEmployees = async () => {
-    const {data, error} = await supabase
-      .from('employees')
-      .select(
-        'id, firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
-      )
+  const {getEmployees, deleteEmployee} = useSupabase()
 
-    if (error) {
-      setFetchError('Could not fetch the employees')
-      setEmployees([])
-    }
-    if (data) {
-      setEmployees(data)
-      // console.log(data)
-      setFetchError(null)
-    }
-  }
-  // console.log(modalRef.current)
   const closeModal = () => {
-    // setAddressToEdit(null)
+    setAddressToEdit(null)
     modalRef.current?.close()
   }
 
   useEffect(() => {
-    console.log(modalRef.current)
     if (!modalRef.current) {
       setAddressToEdit(null)
     }
   }, [modalRef.current])
 
   useEffect(() => {
+    const fetchEmployees = async () => {
+      const {status, data: employeeData} = await getEmployees()
+
+      if (status === 200 && employeeData) {
+        closeModal()
+        setEmployees(employeeData)
+        setFetchError(null)
+      } else {
+        setFetchError('An error occurred. Please try again later.')
+      }
+    }
+    setAddressToEdit(null)
+
     fetchEmployees()
   }, [edited])
-
-  useEffect(() => {
-    setTimeout(() => {
-      errorModalRef.current?.open()
-    }, 0)
-  }, [fetchError])
-
-  // useMutationObserver(mutation => mutation.addedNodes,   setAddressToEdit(null))
 
   const columns = useMemo(
     () => [
@@ -170,13 +156,10 @@ const List = () => {
         cell: tableProps => (
           <div className="flex gap-5 justify-evenly">
             <button
+              aria-label="Edit employee"
               onClick={() => {
-                setTimeout(() => {
-                  //FIXME
-                  // setIsEditModalShown(true)
-                  setAddressToEdit(employees[tableProps.row.index])
-                }, 0)
                 modalRef.current?.open()
+                setAddressToEdit(employees[tableProps.row.index])
               }}
             >
               <svg
@@ -191,14 +174,17 @@ const List = () => {
               </svg>
             </button>
             <button
-              onClick={() => {
-                deleteEmployee(employees[tableProps.row.index].id as number)
-                setEmployees(
-                  employees.filter(
-                    employee =>
-                      employee.id !== employees[tableProps.row.index].id,
-                  ),
+              aria-label="Delete employee"
+              onClick={async () => {
+                const {status} = await deleteEmployee(
+                  employees[tableProps.row.index].id as number,
                 )
+                if (status === 204) {
+                  setDeleteError(null)
+                } else {
+                  setDeleteError('An error occurred. Please try again later.')
+                  errorModalRef.current?.open()
+                }
               }}
             >
               <svg
@@ -261,155 +247,162 @@ const List = () => {
   })
 
   useEffect(() => {
-    if (getState().columnFilters[0]?.id === 'fullName') {
-      if (getState().sorting[0]?.id !== 'fullName') {
-        setSorting([{id: 'fullName', desc: false}])
+    if (employees.length !== 0) {
+      if (getState().columnFilters[0]?.id === 'lastName') {
+        if (getState().sorting[0]?.id !== 'lastName') {
+          setSorting([{id: 'lastName', desc: false}])
+        }
       }
     }
-  }, [getState().columnFilters[0]?.id])
+  }, [employees])
 
   return (
     <>
       {fetchError && (
-        <Modal ref={errorModalRef}>
-          <p>{fetchError}</p>
-        </Modal>
+        <p className="flex translate-y-60 justify-center text-red-600 text-xl">
+          {fetchError}
+        </p>
       )}
+      <Modal ref={errorModalRef}>{deleteError}</Modal>
       <Modal ref={modalRef}>
         <ModalForm
           addressToEdit={addressToEdit}
-          setEmployees={setEmployees}
-          employees={employees}
-          setFetchError={setFetchError}
           closeModal={closeModal}
           setEdited={setEdited}
         />
       </Modal>
       <div className="container mx-auto">
-        <div className="flex w-full justify-between px-2">
-          <div>
-            <DebouncedInput
-              value={globalFilter ?? ''}
-              onChange={value => setGlobalFilter(String(value))}
-              className="p-2 font-lg shadow border border-block relative my-6"
-              placeholder="Search..."
-            />
-          </div>
-          <select
-            value={getState().pagination.pageSize}
-            className="p-2 font-lg shadow border border-block relative my-6 cursor-pointer"
-            onChange={e => {
-              setPageSize(Number(e.target.value))
-            }}
-          >
-            {[5, 10, 25, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
-        <table className="table-auto w-full">
-          <thead className="text-[#96b400] bg-gray-100">
-            {getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    className="px-4 py-2 text-left font-bold border-r border-gray-300"
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
+        {employees.length !== 0 && (
+          <>
+            <div className="flex w-full justify-between px-2">
+              <div>
+                <DebouncedInput
+                  value={globalFilter ?? ''}
+                  onChange={value => setGlobalFilter(String(value))}
+                  className="p-2 font-lg shadow border border-block relative my-6"
+                  placeholder="Search..."
+                />
+              </div>
+              <select
+                value={getState().pagination.pageSize}
+                className="p-2 font-lg shadow border border-block relative my-6 cursor-pointer"
+                onChange={e => {
+                  setPageSize(Number(e.target.value))
+                }}
+              >
+                {[5, 10, 25, 50].map(pageSize => (
+                  <option key={pageSize} value={pageSize}>
+                    Show {pageSize}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <table className="table-auto w-full">
+              <thead className="text-[#96b400] bg-gray-100">
+                {getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <th
+                        key={header.id}
+                        className="px-4 py-2 text-left font-bold border-r border-gray-300"
+                      >
+                        {header.isPlaceholder ? null : (
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? 'cursor-pointer select-none'
+                                : '',
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {{
+                              asc: ' 🔼',
+                              desc: ' 🔽',
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {getRowModel().rows.map(row => (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                      <td
+                        key={cell.id}
+                        className="px-4 py-2 border-b border-x border-gray-300"
                       >
                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
                         )}
-                        {{
-                          asc: ' 🔼',
-                          desc: ' 🔽',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
-                  </th>
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <td
-                    key={cell.id}
-                    className="px-4 py-2 border-b border-x border-gray-300"
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="h-8" />
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <button
-              className="border rounded p-1"
-              onClick={() => setPageIndex(0)}
-              disabled={!getCanPreviousPage()}
-            >
-              {'<<'}
-            </button>
-            <button
-              className="border rounded p-1"
-              onClick={() => previousPage()}
-              disabled={!getCanPreviousPage()}
-            >
-              {'<'}
-            </button>
-            <button
-              className="border rounded p-1"
-              onClick={() => nextPage()}
-              disabled={!getCanNextPage()}
-            >
-              {'>'}
-            </button>
-            <button
-              className="border rounded p-1"
-              onClick={() => setPageIndex(getPageCount() - 1)}
-              disabled={!getCanNextPage()}
-            >
-              {'>>'}
-            </button>
-          </div>
-          <div>
-            <span className="flex items-center gap-1">
-              <div>Page</div>
-              <strong>
-                {getState().pagination.pageIndex + 1} of {getPageCount()}
-              </strong>
-            </span>
-          </div>
-          <span className="flex items-center gap-1">
-            | Go to page:
-            <input
-              type="number"
-              defaultValue={getState().pagination.pageIndex + 1}
-              onChange={e => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0
-                setPageIndex(page)
-              }}
-              className="border p-1 rounded w-16"
-            />
-          </span>
-        </div>
+              </tbody>
+            </table>
+            <div className="h-8" />
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2">
+                <button
+                  className="border rounded p-1"
+                  onClick={() => setPageIndex(0)}
+                  disabled={!getCanPreviousPage()}
+                >
+                  {'<<'}
+                </button>
+                <button
+                  className="border rounded p-1"
+                  onClick={() => previousPage()}
+                  disabled={!getCanPreviousPage()}
+                >
+                  {'<'}
+                </button>
+                <button
+                  className="border rounded p-1"
+                  onClick={() => nextPage()}
+                  disabled={!getCanNextPage()}
+                >
+                  {'>'}
+                </button>
+                <button
+                  className="border rounded p-1"
+                  onClick={() => setPageIndex(getPageCount() - 1)}
+                  disabled={!getCanNextPage()}
+                >
+                  {'>>'}
+                </button>
+              </div>
+              <div>
+                <span className="flex items-center gap-1">
+                  <div>Page</div>
+                  <strong>
+                    {getState().pagination.pageIndex + 1} of {getPageCount()}
+                  </strong>
+                </span>
+              </div>
+              <span className="flex items-center gap-1">
+                | Go to page:
+                <input
+                  type="number"
+                  defaultValue={getState().pagination.pageIndex + 1}
+                  onChange={e => {
+                    const page = e.target.value ? Number(e.target.value) - 1 : 0
+                    setPageIndex(page)
+                  }}
+                  className="border p-1 rounded w-16"
+                />
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </>
   )

@@ -8,33 +8,33 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {
   Dispatch,
   DispatchWithoutAction,
+  MouseEvent,
   SetStateAction,
   useCallback,
+  useState,
 } from 'react'
 import {useForm, Controller} from 'react-hook-form'
 import Dropdown from '../Dropdown/Dropdown'
 import TextInput from '../formInputs/InputField'
+import {useSupabase} from '@/api/useSupabase'
 
 const ModalForm = ({
   addressToEdit,
-  setEmployees,
-  employees,
-  setFetchError,
   closeModal,
   setEdited,
 }: {
   addressToEdit: Partial<Employee> | null
-  setEmployees: Dispatch<React.SetStateAction<Employee[]>>
-  employees: Employee[]
-  setFetchError: Dispatch<SetStateAction<string | null>>
   closeModal: () => void
   setEdited: DispatchWithoutAction
 }) => {
+  const [fetchError, setFetchError] = useState<string | null>(null)
+
+  const {updateEmployee} = useSupabase()
+
   const {
     register,
     handleSubmit,
     control,
-    reset,
     formState: {errors},
   } = useForm<Partial<employeeEditSchemaType>>({
     resolver: zodResolver(employeeEditSchema),
@@ -42,25 +42,20 @@ const ModalForm = ({
 
   const onSubmit = useCallback(
     async (newData: Partial<employeeEditSchemaType>) => {
-      const {status, error} = await supabase
-        .from('employees')
-        .update(newData)
-        .match({id: addressToEdit?.id})
-
-      if (error) {
-        setFetchError('An error occurred. Please try again later.')
-      }
+      const {status} = await updateEmployee(
+        newData,
+        addressToEdit?.id as number,
+      )
 
       if (status === 204) {
-        setEmployees({...employees, ...addressToEdit})
-        setFetchError(null)
         closeModal()
         setEdited()
+      } else {
+        setFetchError('An error occurred. Please try again later.')
       }
     },
     [],
   )
-
   return (
     <>
       <h2 className="text-left mb-5 text-lg underline">
@@ -142,7 +137,6 @@ const ModalForm = ({
           <button
             type="button"
             onClick={() => {
-              // reset()//FIXME
               closeModal()
             }}
             className={
@@ -153,6 +147,7 @@ const ModalForm = ({
           </button>
         </div>
       </form>
+      {fetchError && <p className="mt-2 text-red-600">{fetchError}</p>}
     </>
   )
 }
