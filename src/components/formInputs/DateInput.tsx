@@ -14,6 +14,7 @@ interface IProps<TFieldValues extends FieldValues> {
   fieldName: Path<TFieldValues>
   control: Control<TFieldValues>
   errors: FieldErrors<TFieldValues>
+  filterDate?: (date: Date) => boolean
 }
 
 function DateInput<TFieldValues extends FieldValues>({
@@ -21,6 +22,7 @@ function DateInput<TFieldValues extends FieldValues>({
   fieldName,
   control,
   errors,
+  filterDate,
 }: IProps<TFieldValues>) {
   return (
     <div>
@@ -32,12 +34,13 @@ function DateInput<TFieldValues extends FieldValues>({
         control={control}
         render={({field}) => (
           <DatePicker
+            id={fieldName}
             onChange={date => field.onChange(convertLocalToUTCDate(date))}
             selected={field.value}
             todayButton="Today"
             isClearable
             maxDate={new Date()}
-            filterDate={date => date.getDay() !== 6 && date.getDay() !== 0}
+            filterDate={filterDate}
             showYearDropdown
             dateFormatCalendar="MMMM"
             yearDropdownItemNumber={15}

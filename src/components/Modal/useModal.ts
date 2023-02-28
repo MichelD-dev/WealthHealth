@@ -5,13 +5,13 @@ export type UseModalResult = [boolean, () => void, () => void]
 export function useModal(defaultOpened = false): UseModalResult {
   const [isOpen, setIsOpen] = useState(defaultOpened)
 
-  const openModal = useCallback(() => {
+  const open = useCallback(() => {
     setIsOpen(true)
   }, [])
 
-  const closeModal = useCallback(() => {
+  const close = useCallback(() => {
     setIsOpen(false)
   }, [])
 
-  return [isOpen, openModal, closeModal]
+  return [isOpen, open, close]
 }

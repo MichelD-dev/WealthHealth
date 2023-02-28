@@ -1,10 +1,12 @@
 import {
   forwardRef,
+  MouseEvent,
   ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
 } from 'react'
 import {createPortal} from 'react-dom'
 import {useModal} from './useModal'
@@ -19,9 +21,13 @@ export interface ModalRef {
   close: () => void
 }
 
+const modalRootId = Math.random().toString(36).slice(2, 10)
+
 const Modal = forwardRef<ModalRef, ModalProps>(
   ({children, defaultOpened = false}, ref) => {
     const [isOpen, open, close] = useModal(defaultOpened)
+
+    const modalRef = useRef<HTMLDivElement>(null)
 
     useImperativeHandle(
       ref,
@@ -29,43 +35,76 @@ const Modal = forwardRef<ModalRef, ModalProps>(
         open,
         close,
       }),
-      [],
+      [open, close],
     )
 
-    const handleEscape = useCallback((e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
-    }, [])
+    const handleEscape = useCallback(
+      (e: KeyboardEvent) => {
+        if (e.key === 'Escape') close()
+      },
+      [close],
+    )
 
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) close()
-    }
+    const handleClick = useCallback(
+      (e: MouseEvent<HTMLDivElement>) => {
+        // console.log(e.target, e.currentTarget)
+        if (e.target === e.currentTarget) close()
+      },
+      [close],
+    )
 
     useEffect(() => {
       const modalRoot = document.createElement('div')
-      modalRoot.setAttribute('id', 'modal-root')
+      modalRoot.id = `modal-root-${modalRootId}`
       document.body.appendChild(modalRoot)
 
-      if (isOpen) document.addEventListener('keydown', handleEscape, false)
+      document.addEventListener('keydown', handleEscape)
+      document.body.classList.add('modal-open')
+      document.body.dataset.modalOpen = 'true'
+
+      // if (isOpen) document.addEventListener('keydown', handleEscape, false)
 
       return () => {
+        document.body.classList.remove('modal-open')
+        document.body.removeAttribute('data-modal-open')
+
         document.body.removeChild(modalRoot)
 
-        document.removeEventListener('keydown', handleEscape, false)
+        document.removeEventListener('keydown', handleEscape)
       }
-    }, [handleEscape, isOpen])
+    }, [handleEscape])
+
+    useEffect(() => {
+      const handleFocus = (e: FocusEvent) => {
+        if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+          modalRef.current.focus()
+        }
+      }
+      document.addEventListener('focusin', handleFocus)
+      return () => {
+        document.removeEventListener('focusin', handleFocus)
+      }
+    }, [])
 
     const modalContent = useMemo(
       () => (
         <div
           onClick={handleClick}
+          role="dialog"
+          aria-modal={isOpen}
           className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-75"
         >
-          <div className="bg-white max-w-lg mx-auto rounded-lg drop-shadow-xl  text-center">
+          <div
+            ref={modalRef}
+            role="document"
+            className="bg-white max-w-lg mx-auto rounded-lg drop-shadow-xl  text-center"
+          >
             <div className="modal-header flex justify-end px-4 py-2 relative">
               <button
                 onClick={() => {
                   close()
                 }}
+                aria-label="Close Modal"
                 className="absolute top-0 translate-x-1/3 -translate-y-1/2 right-0 p-1 rounded-full bg-black text-white hover:text-gray-400 focus:outline-none focus:text-gray-400"
               >
                 <svg
@@ -87,7 +126,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(
     return isOpen
       ? createPortal(
           modalContent,
-          document.getElementById('modal-root') as Element,
+          document.getElementById(`modal-root-${modalRootId}`) as Element,
         )
       : null
   },
