@@ -20,16 +20,10 @@ interface AuthProviderProps {
   children: ReactNode
 }
 
-const AuthProvider = ({children}: AuthProviderProps) => {
-  const storedUser = localStorage.getItem('user')
-  const initialUser = storedUser ? JSON.parse(storedUser) : null
-  const [user, setUser] = useState<User | null>(initialUser)
+const {data} = await supabase.auth.getSession()
 
-  useEffect(() => {
-    user
-      ? localStorage.setItem('user', JSON.stringify(user))
-      : localStorage.removeItem('user')
-  }, [user])
+const AuthProvider = ({children}: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(data.session?.user as User)
 
   useEffect(() => {
     const {data: authListener} = supabase.auth.onAuthStateChange(
