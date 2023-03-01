@@ -10,7 +10,7 @@ import App from '@/App'
 import Spinner from '@/components/Spinner/Spinner'
 import {useAuth} from '@/context/AuthProvider'
 
-const Form = lazy(() => import('@/pages/Employee_creation/creation'))
+const Form = lazy(() => import('@/pages/Employee_creation/Creation'))
 const LoginForm = lazy(() => import('@/pages/Login/Login'))
 const List = lazy(() => import('@/pages/Employee_list/List'))
 const Error404 = lazy(() => import('@/pages/error404/Error404'))

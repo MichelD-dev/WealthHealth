@@ -1,22 +1,14 @@
-import supabase from '@/config/supabaseClient'
-import {
-  employeeEditSchema,
-  employeeEditSchemaType,
-} from '@/types/employee.model'
 import {Employee} from '@/types/types'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {
-  Dispatch,
-  DispatchWithoutAction,
-  MouseEvent,
-  SetStateAction,
-  useCallback,
-  useState,
-} from 'react'
+import {DispatchWithoutAction, useCallback, useState} from 'react'
 import {useForm, Controller} from 'react-hook-form'
 import Dropdown from '../Dropdown/Dropdown'
 import TextInput from '../formInputs/InputField'
 import {useSupabase} from '@/api/useSupabase'
+import {
+  employeeEditSchema,
+  employeeEditSchemaType,
+} from '@/types/employee.model'
 
 const ModalForm = ({
   addressToEdit,
@@ -86,7 +78,6 @@ const ModalForm = ({
                 ]}
                 onChange={onChange}
                 onBlur={onBlur}
-                // defaultValue="Marketing"
                 className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               />
             )}
@@ -106,14 +97,13 @@ const ModalForm = ({
           <Controller
             name="state"
             control={control}
-            render={({field: {onChange, onBlur, value}}) => (
+            render={({field: {onChange, onBlur}}) => (
               <Dropdown
                 label="State"
                 labelclassname="block my-1"
                 options={['Alabama', 'Ohio', 'Montana']}
                 onChange={onChange}
                 onBlur={onBlur}
-                // defaultValue={addressToEdit?.state ?? value}
                 className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
               />
             )}

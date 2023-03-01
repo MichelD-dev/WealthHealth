@@ -14,30 +14,16 @@ import {
   FilterFn,
 } from '@tanstack/react-table'
 import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
-import {
-  MouseEvent,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
-import {
-  employeeEditSchemaType,
-  EmployeeWithAddressSchemaType,
-} from '@/types/employee.model'
-import supabase from '@/config/supabaseClient'
+import {useEffect, useMemo, useReducer, useRef, useState} from 'react'
+import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import type {Employee} from '@/types/types'
 import {ModalRef} from '@/components/Modal/Modal'
 import ModalForm from '@/components/ModalForm/ModalForm'
-import {Modal} from '@/components/Modal'
 import {useSupabase} from '@/api/useSupabase'
-
-// import {Modal} from '../../../lib/dist'
-
-// import {Modal} from 'md-modal'
+// import { Modal } from 'lib/dist'
+// import {Modal} from '@/components/Modal'
+import {Modal} from '../../../lib/dist'
+// import {Modal} from 'mdtemp-modal'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -99,7 +85,7 @@ const List = () => {
       if (status === 200 && employeeData) {
         closeModal()
         setEmployees(employeeData)
-        setFetchError(null)
+        setFetchError(!employeeData.length ? 'No employees listed.' : null)
       } else {
         setFetchError('An error occurred. Please try again later.')
       }
@@ -181,6 +167,7 @@ const List = () => {
                 )
                 if (status === 204) {
                   setDeleteError(null)
+                  setEdited()
                 } else {
                   setDeleteError('An error occurred. Please try again later.')
                   errorModalRef.current?.open()
@@ -224,7 +211,7 @@ const List = () => {
     setPageSize,
   } = useReactTable({
     columns: tableColumns,
-    data: tableData,
+    data: tableData as EmployeeWithAddressSchemaType[],
     state: {
       sorting,
       columnFilters,

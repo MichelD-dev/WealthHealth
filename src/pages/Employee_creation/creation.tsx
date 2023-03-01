@@ -5,27 +5,17 @@ import {
   EmployeeSchemaType,
   EmployeeWithAddressSchemaType,
 } from '@/types/employee.model'
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  lazy,
-  Suspense,
-  useState,
-} from 'react'
-import supabase from '@/config/supabaseClient'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {ModalRef} from '@/components/Modal/Modal'
 import Dropdown from '@/components/Dropdown/Dropdown'
-
-import {Modal} from '@/components/Modal'
-// import {Modal} from '../../../lib/dist'
 import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
 import AddressToggle from '@/components/formInputs/AddressToggle'
 import {useSupabase} from '@/api/useSupabase'
-
+import {Modal} from '@/components/Modal'
+// import {Modal} from '../../../lib/dist'
 // import {Modal} from 'md-modal'
+
 // const Modal = lazy(() => import('@/components/Modal/Modal'))
 
 const Form = () => {
@@ -180,7 +170,6 @@ const Form = () => {
                       ]}
                       onChange={onChange}
                       onBlur={onBlur}
-                      // defaultValue="Marketing"//FIXME
                       className="form-select bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                     />
                   )}
