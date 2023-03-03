@@ -17,13 +17,10 @@ import {RankingInfo, rankItem} from '@tanstack/match-sorter-utils'
 import {useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import type {Employee} from '@/types/types'
-import {ModalRef} from '@/components/Modal/Modal'
 import ModalForm from '@/components/ModalForm/ModalForm'
 import {useSupabase} from '@/api/useSupabase'
-// import { Modal } from 'lib/dist'
-// import {Modal} from '@/components/Modal'
-import {Modal} from '../../../lib/dist'
-// import {Modal} from 'mdtemp-modal'
+import {Modal} from '@midly/react-modal'
+import {ModalRef} from '@midly/react-modal/dist/esm/Modal'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {

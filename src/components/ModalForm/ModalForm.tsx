@@ -2,13 +2,13 @@ import {Employee} from '@/types/types'
 import {zodResolver} from '@hookform/resolvers/zod'
 import {DispatchWithoutAction, useCallback, useState} from 'react'
 import {useForm, Controller} from 'react-hook-form'
-import Dropdown from '../Dropdown/Dropdown'
 import TextInput from '../formInputs/InputField'
 import {useSupabase} from '@/api/useSupabase'
 import {
   employeeEditSchema,
   employeeEditSchemaType,
 } from '@/types/employee.model'
+import {Dropdown} from '@midly/react-dropdown'
 
 const ModalForm = ({
   addressToEdit,

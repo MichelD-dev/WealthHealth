@@ -36,9 +36,6 @@ export const useSupabase = () => {
 
   const deleteEmployee = async (id: number) => {
     const {status, data} = await supabase.from('employees').delete().match({id})
-    // .select(
-    //   'id, firstname, lastname, startdate, department, birthdate, street, city, state, zipcode',
-    // )
 
     return {status, data}
   }

@@ -6,17 +6,12 @@ import {
   EmployeeWithAddressSchemaType,
 } from '@/types/employee.model'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {ModalRef} from '@/components/Modal/Modal'
-import Dropdown from '@/components/Dropdown/Dropdown'
 import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
 import AddressToggle from '@/components/formInputs/AddressToggle'
 import {useSupabase} from '@/api/useSupabase'
-import {Modal} from '@/components/Modal'
-// import {Modal} from '../../../lib/dist'
-// import {Modal} from 'md-modal'
-
-// const Modal = lazy(() => import('@/components/Modal/Modal'))
+import Modal, {ModalRef} from '@midly/react-modal/dist/esm/Modal'
+import Dropdown from '@midly/react-dropdown/dist/esm/Dropdown'
 
 const Form = () => {
   const [newEmployee, setNewEmployee] = useState<{

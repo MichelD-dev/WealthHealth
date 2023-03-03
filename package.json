@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.11",
+    "@midly/react-dropdown": "^1.0.2",
+    "@midly/react-modal": "^1.0.2",
     "@supabase/auth-ui-react": "^0.2.8",
     "@supabase/supabase-js": "^2.8.0",
     "@tanstack/match-sorter-utils": "^8.7.6",
