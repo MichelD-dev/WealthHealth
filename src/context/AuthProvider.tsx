@@ -7,11 +7,11 @@ interface User {
 }
 
 interface AuthContextProps {
-  user: User | null
+  user: User | null | undefined
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  user: null,
+  user: undefined,
 })
 
 export const useAuth = () => useContext(AuthContext)
@@ -21,12 +21,11 @@ interface AuthProviderProps {
 }
 
 const AuthProvider = ({children}: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null | undefined>()
 
   useEffect(() => {
     const fetchSession = async () => {
       const {data} = await supabase.auth.getSession()
-
       setUser(data.session?.user as User)
 
       const {data: authListener} = supabase.auth.onAuthStateChange(
@@ -43,6 +42,7 @@ const AuthProvider = ({children}: AuthProviderProps) => {
         authListener.subscription.unsubscribe()
       }
     }
+
     fetchSession()
   }, [])
 
