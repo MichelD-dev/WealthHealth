@@ -1,10 +1,7 @@
-import supabase from '@/config/supabaseClient'
 import {NavLink, useLocation} from 'react-router-dom'
 
 const Navbar = () => {
   const {pathname} = useLocation()
-
-  const signOut = async () => await supabase.auth.signOut()
 
   return (
     <>
@@ -18,24 +15,15 @@ const Navbar = () => {
           <ul className="flex flex-row gap-5 mr-5 list-none">
             <li className="list-none">
               <NavLink
-                to="/list"
+                to="/"
                 className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
               >
                 View Current Employees
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to="/"
-                onClick={signOut}
-                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
-              >
-                Log out
-              </NavLink>
-            </li>
           </ul>
         )}
-        {pathname === '/list' && (
+        {pathname === '/' && (
           <ul className="flex flex-row gap-5 mr-5 list-none">
             <li className="list-none">
               <NavLink
@@ -43,15 +31,6 @@ const Navbar = () => {
                 className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
               >
                 Create New Employee
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/"
-                onClick={signOut}
-                className="text-lg no-underline text-grey-darkest hover:text-blue-dark ml-2"
-              >
-                Log out
               </NavLink>
             </li>
           </ul>

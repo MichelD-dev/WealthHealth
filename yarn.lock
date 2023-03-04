@@ -233,25 +233,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@midly/react-dropdown@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@midly/react-dropdown@npm:1.0.2"
+"@midly/react-dropdown@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@midly/react-dropdown@npm:1.0.3"
   dependencies:
     tslib: ^2.5.0
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: 70e3b05008b4003fe1174245479dc27e22704f78acd0175a996a61ec8d9fb339701333698ae0103b937acaff77b39f58307b18a867b3b9742d10c3a3b7866f98
+  checksum: e75446693d87fc28fd974dd896149f6dcb6731e87471a052a7d2681fb615078ed4ee6d9504d74a4dabfc4d534f7f64eae13b2458a3fa161be38d502e5f9da0ac
   languageName: node
   linkType: hard
 
-"@midly/react-modal@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@midly/react-modal@npm:1.0.2"
+"@midly/react-modal@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "@midly/react-modal@npm:1.0.7"
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: ee463f72e0f17584469a1568385756937383084eeeb5418baf025062da9b294108bc001b5372f180bd1e8ec1fd557a8a23f6b6bbdf1d55fd5f26f7a2191fdac6
+  checksum: 700636b5fc7c9ebc4c787e97fd46b8a3a08beb349318478297bb776f0dfd91fbb27775609aeb919c26389e1140fc846a2e454949627fc2808f098de991c037cd
   languageName: node
   linkType: hard
 
@@ -5073,8 +5073,8 @@ __metadata:
   resolution: "wealthhealth@workspace:."
   dependencies:
     "@hookform/resolvers": ^2.9.11
-    "@midly/react-dropdown": ^1.0.2
-    "@midly/react-modal": ^1.0.2
+    "@midly/react-dropdown": ^1.0.3
+    "@midly/react-modal": ^1.0.7
     "@supabase/auth-ui-react": ^0.2.8
     "@supabase/supabase-js": ^2.8.0
     "@tanstack/match-sorter-utils": ^8.7.6
