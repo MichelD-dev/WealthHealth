@@ -1,20 +1,7 @@
 import {Auth, ThemeSupa} from '@supabase/auth-ui-react'
 import supabase from '@/config/supabaseClient'
-import {useAuth} from '@/context/AuthProvider'
-import {useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
 
 const Login = () => {
-  const {user} = useAuth()
-
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (user) {
-      navigate('/list')
-    }
-  }, [user])
-
   return (
     <div className="flex justify-center">
       <div className="flex flex-col  bg-white p-8 rounded-lg shadow-md mt-10 w-96">

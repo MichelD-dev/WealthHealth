@@ -19,8 +19,19 @@ function RequireAuth({children}: {children: JSX.Element}) {
   const {user} = useAuth()
   const location = useLocation()
 
-  if (user === null) {
+  if (!user) {
     return <Navigate to="/" state={{from: location}} replace />
+  }
+
+  return children
+}
+
+function RequireUnAuth({children}: {children: JSX.Element}) {
+  const {user} = useAuth()
+  const location = useLocation()
+
+  if (user) {
+    return <Navigate to="/list" state={{from: location}} replace />
   }
 
   return children
@@ -32,9 +43,11 @@ const router = createBrowserRouter(
       <Route
         index
         element={
-          <Suspense fallback={<Spinner />}>
-            <LoginForm />
-          </Suspense>
+          <RequireUnAuth>
+            <Suspense fallback={<Spinner />}>
+              <LoginForm />
+            </Suspense>
+          </RequireUnAuth>
         }
       />
       <Route
