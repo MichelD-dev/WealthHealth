@@ -233,25 +233,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@midly/react-dropdown@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@midly/react-dropdown@npm:1.0.3"
-  dependencies:
-    tslib: ^2.5.0
+"@midly/react-dropdown@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@midly/react-dropdown@npm:1.1.1"
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: e75446693d87fc28fd974dd896149f6dcb6731e87471a052a7d2681fb615078ed4ee6d9504d74a4dabfc4d534f7f64eae13b2458a3fa161be38d502e5f9da0ac
+  checksum: d95acd4e4d3cfe8dd18c0424bd44b3e366b223224b85164cb6d12c50a6c09713c22778fbdba403ceca012b050396ecbefeae3a33e98189c2a4b6ace6a41a64b5
   languageName: node
   linkType: hard
 
-"@midly/react-modal@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "@midly/react-modal@npm:1.0.7"
+"@midly/react-modal@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@midly/react-modal@npm:1.1.1"
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: 700636b5fc7c9ebc4c787e97fd46b8a3a08beb349318478297bb776f0dfd91fbb27775609aeb919c26389e1140fc846a2e454949627fc2808f098de991c037cd
+  checksum: abec42d63702991a38a2a22142c1c0d03c749b9edcab87a6ecdbd85ae33b4be11d95beb01a7c50eca71e07a3b5dd0a3628c58d5d00be30c67ff4f50e57bf1010
   languageName: node
   linkType: hard
 
@@ -4817,7 +4815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.1.0, tslib@npm:^2.5.0":
+"tslib@npm:^2.1.0":
   version: 2.5.0
   resolution: "tslib@npm:2.5.0"
   checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
@@ -5073,8 +5071,8 @@ __metadata:
   resolution: "wealthhealth@workspace:."
   dependencies:
     "@hookform/resolvers": ^2.9.11
-    "@midly/react-dropdown": ^1.0.3
-    "@midly/react-modal": ^1.0.7
+    "@midly/react-dropdown": ^1.1.1
+    "@midly/react-modal": ^1.1.1
     "@supabase/auth-ui-react": ^0.2.8
     "@supabase/supabase-js": ^2.8.0
     "@tanstack/match-sorter-utils": ^8.7.6
