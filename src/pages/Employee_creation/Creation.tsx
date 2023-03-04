@@ -10,8 +10,9 @@ import DateInput from '@/components/formInputs/DateInput'
 import TextInput from '@/components/formInputs/InputField'
 import AddressToggle from '@/components/formInputs/AddressToggle'
 import {useSupabase} from '@/api/useSupabase'
-import Modal, {ModalRef} from '@midly/react-modal/dist/esm/Modal'
 import Dropdown from '@midly/react-dropdown/dist/esm/Dropdown'
+import {Modal} from '@midly/react-modal'
+import {ModalRef} from '@midly/react-modal/dist/esm/Modal'
 
 const Form = () => {
   const [newEmployee, setNewEmployee] = useState<{

@@ -1,7 +1,4 @@
 const Spinner = () => {
-  const spinnerSize = 'w-40 h-40'
-  const strokeWidth = 2
-
   return (
     <div className="flex translate-y-60 justify-center">
       <div className="relative">
