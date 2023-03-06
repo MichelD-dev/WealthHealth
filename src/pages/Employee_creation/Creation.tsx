@@ -13,7 +13,6 @@ import {useSupabase} from '@/api/useSupabase'
 import Dropdown from '@midly/react-dropdown/dist/esm/Dropdown'
 import {Modal} from '@midly/react-modal'
 import {ModalRef} from '@midly/react-modal/dist/esm/Modal'
-import {twMerge} from 'tailwind-merge'
 
 const Form = () => {
   const [newEmployee, setNewEmployee] = useState<{
@@ -173,11 +172,9 @@ const Form = () => {
                 />
                 <button
                   type="submit"
-                  className={twMerge(
-                    `w-full text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
-                      isSubmitting && 'disabled'
-                    }`,
-                  )}
+                  className={`w-full text-white bg-[#b7ce48] hover:bg-[#abc042] focus:ring-4 focus:outline-none focus:ring-[#aabe44] font-medium rounded-lg text-sm px-5 py-2.5 text-center ${
+                    isSubmitting && 'disabled'
+                  }`}
                   disabled={isSubmitting}
                 >
                   Save
