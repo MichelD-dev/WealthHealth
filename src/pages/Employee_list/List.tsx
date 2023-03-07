@@ -133,9 +133,9 @@ const List = () => {
       columnHelper.accessor('zipcode', {
         header: 'Zip Code',
       }),
-      columnHelper.accessor(() => 'delete', {
+      columnHelper.accessor(() => 'edit', {
         header: '',
-        id: 'delete',
+        id: 'edit',
         cell: tableProps => (
           <div className="flex gap-5 justify-evenly">
             <button
@@ -372,7 +372,7 @@ const List = () => {
                   </strong>
                 </span>
               </div>
-              <span className="flex items-center gap-1">
+              <label className="flex items-center gap-1">
                 | Go to page:
                 <input
                   type="number"
@@ -383,7 +383,7 @@ const List = () => {
                   }}
                   className="border p-1 rounded w-16"
                 />
-              </span>
+              </label>
             </div>
           </>
         )}
