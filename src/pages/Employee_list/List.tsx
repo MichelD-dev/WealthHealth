@@ -22,6 +22,13 @@ import {useSupabase} from '@/api/useSupabase'
 import {Modal} from '@midly/react-modal'
 import {ModalRef} from '@midly/react-modal/dist/esm/Modal'
 
+/**
+Ce module contient la liste des employés.
+Ce module utilise la bibliothèque @tanstack/react-table pour créer une table de données paginée avec des capacités de tri et de filtrage.
+Les fonctions utilitaires @tanstack/match-sorter-utils sont utilisées pour trier et filtrer les données de manière flexible.
+Ce module utilise également l'API useSupabase pour communiquer avec la base de données Supabase.
+*/
+
 declare module '@tanstack/table-core' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
@@ -31,50 +38,88 @@ declare module '@tanstack/table-core' {
   }
 }
 
+/**
+Définit une fonction de filtre pour une utilisation avec la bibliothèque de table @tanstack/react-table.
+@param row - Ligne de données à filtrer
+@param columnId - L'identifiant de colonne pour cette colonne
+@param value - La valeur à utiliser pour le filtrage
+@param addMeta - Fonction pour ajouter des métadonnées à la sortie du filtre
+@returns un booléen indiquant si la ligne doit être conservée
+*/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
+  // Évalue la pertinence de l'élément par rapport au filtre
   const itemRank = rankItem(row.getValue(columnId), value)
 
-  // Store the itemRank info
+  // Stocke les informations de l'évaluation dans les métadonnées
   addMeta({
     itemRank,
   })
 
-  // Return if the item should be filtered in/out
+  // Retourne si la ligne doit être conservée
   return itemRank.passed
 }
 
 const columnHelper = createColumnHelper<EmployeeWithAddressSchemaType>()
 
+/**
+ * Composant qui affiche une liste d'employés sous forme de tableau avec des fonctionnalités de tri et de filtre pour les colonnes.
+ * Les données sont récupérées depuis un serveur et peuvent être supprimées à l'aide d'un hook personnalisé.
+ */
 const List = () => {
+  // State pour le tri des colonnes
   const [sorting, setSorting] = useState<SortingState>([])
+  // State pour les filtres de colonnes
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  // State pour le filtre global
   const [globalFilter, setGlobalFilter] = useState('')
+  // State pour les éventuelles erreurs de récupération des données
   const [fetchError, setFetchError] = useState<string | null>(null)
+  // State pour les éventuelles erreurs de suppression d'employé
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  // State pour les données des employés récupérées depuis le serveur
   const [employees, setEmployees] = useState<Partial<Employee>[]>([])
+  // State pour l'employé à éditer
   const [addressToEdit, setAddressToEdit] = useState<Partial<Employee> | null>(
     null,
   )
+  // State pour détecter les modifications et recharger les données
   const [edited, setEdited] = useReducer(state => !state, false)
 
+  // Référence au composant de dialogue pour l'édition d'adresse
   const modalRef = useRef<ModalRef>(null)
+
+  // Référence au composant de dialogue pour les erreurs
   const errorModalRef = useRef<ModalRef>(null)
 
+  /**
+   * Hook personnalisé renvoyant des fonctions pour obtenir et supprimer des données de la base de données.
+   */
   const {getEmployees, deleteEmployee} = useSupabase()
 
+  /**
+   * Fonction qui ferme le composant de dialogue pour l'édition d'adresse.
+   */
   const closeModal = () => {
     setAddressToEdit(null)
     modalRef.current?.close()
   }
 
+  /**
+   * Effet qui se déclenche lorsque la référence à la modale d'édition d'adresse est mise à jour.
+   * Réinitialise l'état de l'employé à éditer.
+   */
   useEffect(() => {
     if (!modalRef.current) {
       setAddressToEdit(null)
     }
   }, [modalRef.current])
 
+  /**
+   * Effet qui se déclenche lorsqu'il y a des modifications d'employé ou lors du premier rendu.
+   * Récupère les données des employés depuis le serveur et met à jour le state.
+   * En cas d'erreur, affiche une erreur dans la modale correspondante.
+   */
   useEffect(() => {
     const fetchEmployees = async () => {
       const {status, data: employeeData} = await getEmployees()
@@ -92,6 +137,15 @@ const List = () => {
     fetchEmployees()
   }, [edited])
 
+  /**
+La constante columns est un tableau qui contient toutes les colonnes pour l'affichage de la liste des employés.
+Chaque colonne est un objet qui contient les propriétés suivantes:
+accessor: une fonction qui permet d'extraire les données de chaque ligne pour la colonne en question.
+header: le titre de la colonne.
+cell: une fonction qui permet de personnaliser le contenu de chaque cellule.
+id: un identifiant unique pour chaque colonne.
+La fonction useMemo permet d'optimiser les performances en mémorisant les valeurs retournées par cette fonction pour une utilisation ultérieure.
+*/
   const columns = useMemo(
     () => [
       columnHelper.accessor(row => row.firstname, {
@@ -192,9 +246,30 @@ const List = () => {
     [employees],
   )
 
+  // Memoize les données employé pour éviter les re-rendus du tableau
   const tableData = useMemo(() => employees, [employees])
   const tableColumns = useMemo(() => columns, [columns])
 
+  /**
+Initialise les paramètres de la table à partir de la fonction useReactTable de React-Table.
+@param {Array} tableColumns - Les colonnes de la table.
+@param {Array} tableData - Les données de la table.
+@param {Array} sorting - Les paramètres de tri de la table.
+@param {Array} columnFilters - Les filtres des colonnes de la table.
+@param {string} globalFilter - Le filtre global de la table.
+@param {function} setSorting - Fonction pour définir le tri de la table.
+@param {function} getCoreRowModel - Fonction pour obtenir les données de la table avant filtrage/tri/pagination.
+@param {function} getSortedRowModel - Fonction pour obtenir les données triées de la table.
+@param {function} fuzzyFilter - Fonction pour filtrer les données de la table.
+@param {function} setColumnFilters - Fonction pour définir les filtres des colonnes de la table.
+@param {function} setGlobalFilter - Fonction pour définir le filtre global de la table.
+@param {function} getFilteredRowModel - Fonction pour obtenir les données filtrées de la table.
+@param {function} getPaginationRowModel - Fonction pour obtenir les données paginées de la table.
+@param {function} getFacetedRowModel - Fonction pour obtenir les données groupées de la table.
+@param {function} getFacetedUniqueValues - Fonction pour obtenir les valeurs uniques des colonnes de la table.
+@param {function} getFacetedMinMaxValues - Fonction pour obtenir les valeurs minimum et maximum des colonnes de la table.
+@returns {Object} - Un objet contenant les méthodes et les propriétés pour la table.
+*/
   const {
     getHeaderGroups,
     getRowModel,
@@ -230,6 +305,9 @@ const List = () => {
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
   })
 
+  /**
+   * Si la liste des employés n'est pas vide, elle triera les données par nom de famille croissant si la colonne "lastName" est filtrée et pas triée.
+   */
   useEffect(() => {
     if (employees.length !== 0) {
       if (getState().columnFilters[0]?.id === 'lastName') {
@@ -392,7 +470,15 @@ const List = () => {
   )
 }
 
-// A debounced input react component
+/**
+ * Composant pour un champ de recherche avec délai de mise à jour
+ * @param {Object} props - Les propriétés du composant
+ * @param {string|number} props.value - La valeur du champ de saisie
+ * @param {(value: string|number) => void} props.onChange - La fonction appelée à chaque modification de la valeur
+ * @param {number} [props.debounce=500] - Le délai en millisecondes avant de mettre à jour la valeur
+ * @param {Object} props - Les autres propriétés du champ de saisie
+ * @returns {JSX.Element} - Le champ de recherche avec délai de mise à jour
+ */
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -402,7 +488,10 @@ function DebouncedInput({
   value: string | number
   onChange: (value: string | number) => void
   debounce?: number
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+} & Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange'
+>): JSX.Element {
   const [value, setValue] = useState(initialValue)
 
   useEffect(() => {

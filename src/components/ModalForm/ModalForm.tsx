@@ -10,6 +10,14 @@ import {
 } from '@/types/employee.model'
 import {Dropdown} from '@midly/react-dropdown'
 
+/**
+Composant ModalForm pour l'édition d'une adresse d'employé
+@param {object} props - Les propriétés du composant
+@param {Partial<Employee>|null} props.addressToEdit - L'adresse à éditer
+@param {Function} props.closeModal - La fonction pour fermer la modale
+@param {DispatchWithoutAction} props.setEdited - La fonction pour indiquer que l'adresse a été éditée
+@returns {JSX.Element} - Le composant ModalForm
+*/
 const ModalForm = ({
   addressToEdit,
   closeModal,
@@ -32,6 +40,10 @@ const ModalForm = ({
     resolver: zodResolver(employeeEditSchema),
   })
 
+  /**
+La fonction pour soumettre le formulaire d'édition
+@param {Partial<employeeEditSchemaType>} newData - Les nouvelles données à envoyer
+*/
   const onSubmit = useCallback(
     async (newData: Partial<employeeEditSchemaType>) => {
       const {status} = await updateEmployee(

@@ -4,11 +4,21 @@ import {useAuth} from '@/context/AuthProvider'
 import {useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
 
-const Login = () => {
+/**
+Composant pour la page de connexion
+Ce composant utilise le composant Auth de la librairie @supabase/auth-ui-react
+pour afficher une interface de connexion
+@returns {JSX.Element} Composant de la page de connexion
+*/
+const Login = (): JSX.Element => {
   const {user} = useAuth()
 
   const navigate = useNavigate()
 
+  /**
+Redirige l'utilisateur connecté vers la page de liste
+@param {Object} user - L'utilisateur connecté
+*/
   useEffect(() => {
     if (user) {
       navigate('/list')

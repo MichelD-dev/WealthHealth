@@ -1,3 +1,6 @@
+/**
+Composant de spinner qui affiche un cercle en rotation pour indiquer une action en cours.
+*/
 const Spinner = () => {
   return (
     <div className="flex translate-y-60 justify-center">

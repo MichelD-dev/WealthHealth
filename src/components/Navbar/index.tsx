@@ -1,9 +1,15 @@
 import supabase from '@/config/supabaseClient'
 import {NavLink, useLocation} from 'react-router-dom'
 
+/**
+Composant Navbar pour la navigation du site
+@returns {JSX.Element} Élément JSX représentant la Navbar
+*/
 const Navbar = () => {
+  // Récupération du chemin actuel avec useLocation
   const {pathname} = useLocation()
 
+  // Fonction de déconnexion de l'utilisateur
   const signOut = async () => await supabase.auth.signOut()
 
   return (

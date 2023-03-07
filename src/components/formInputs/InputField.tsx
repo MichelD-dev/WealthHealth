@@ -8,6 +8,21 @@ type TextInputProps<TFieldValues extends FieldValues> = {
   error?: string
 } & InputHTMLAttributes<HTMLInputElement>
 
+/**
+
+Composant TextInput qui génère un input HTML de type texte avec un label.
+Ce composant est utilisé dans des formulaires avec la librairie react-hook-form.
+@template TFieldValues - Type générique pour les valeurs des champs du formulaire
+@typedef {Object} TextInputProps - Propriétés du composant TextInput
+@property {string} label - Label à afficher pour le champ de saisie
+@property {string} id - Id du champ de saisie
+@property {UseFormRegister<TFieldValues>} register - Fonction register de react-hook-form pour enregistrer le champ de saisie dans le formulaire
+@property {string} [error] - Message d'erreur à afficher pour le champ de saisie
+@property {InputHTMLAttributes<HTMLInputElement>} inputProps - Autres propriétés HTML à passer à l'input
+@property {TFieldValues} defaultValue - Valeur par défaut du champ de saisie
+@param {TextInputProps} props - Propriétés du composant TextInput
+@returns {JSX.Element} - Composant TextInput
+*/
 const TextInput = <TFieldValues extends FieldValues>({
   label,
   id,

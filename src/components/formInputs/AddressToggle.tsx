@@ -1,6 +1,12 @@
 import {EmployeeWithAddressSchemaType} from '@/types/employee.model'
 import {UseFormRegister} from 'react-hook-form/dist/types'
 
+/**
+Composant d'interrupteur pour activer/désactiver l'adresse d'un employé
+@param {Object} props - Les propriétés du composant
+@param {Function} props.register - Fonction de registration du formulaire pour utiliser avec React Hook Form
+@returns {JSX.Element} Composant d'interrupteur pour activer/désactiver l'adresse d'un employé
+*/
 const AddressToggle = ({
   register,
 }: {

@@ -15,6 +15,10 @@ import {Modal} from '@midly/react-modal'
 import {ModalRef} from '@midly/react-modal/dist/esm/Modal'
 import {twMerge} from 'tailwind-merge'
 
+/**
+Formulaire de création d'un employé
+@returns JSX.Element
+*/
 const Form = () => {
   const [newEmployee, setNewEmployee] = useState<{
     firstname: string
@@ -22,6 +26,9 @@ const Form = () => {
   } | null>(null)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
+  /**
+Hook useForm pour gérer le formulaire
+*/
   const {
     register,
     handleSubmit,
@@ -34,6 +41,9 @@ const Form = () => {
     resolver: useMemo(() => zodResolver(EmployeeSchema), [EmployeeSchema]),
   })
 
+  /**
+Reset le formulaire si la soumission est réussie
+*/
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset()
@@ -42,8 +52,15 @@ const Form = () => {
 
   const modalRef = useRef<ModalRef>(null)
 
+  /**
+Hook useSupabase pour appeler l'API Supabase
+*/
   const {createEmployee} = useSupabase()
 
+  /**
+Fonction onSubmit pour soumettre le formulaire
+@param employee Les informations de l'employé à créer
+*/
   const onSubmit: SubmitHandler<EmployeeWithAddressSchemaType> = async (
     employee: EmployeeSchemaType,
   ) => {
@@ -59,6 +76,9 @@ const Form = () => {
     }
   }
 
+  /**
+Valeur booléenne du champ 'address' pour savoir si la section adresse du formulaire est ouverte.
+*/
   const address = watch('address')
 
   return (

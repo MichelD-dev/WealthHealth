@@ -1,6 +1,10 @@
 /* eslint-disable react/no-unescaped-entities */
 import {Link} from 'react-router-dom'
 
+/**
+Composant pour afficher la page d'erreur 404.
+@returns {JSX.Element} Le composant de la page d'erreur.
+*/
 const Error = () => (
   <section className="flex items-center h-full p-16 text-[#96b400]">
     <div className="container flex flex-col items-center justify-center px-5 mx-auto my-8">

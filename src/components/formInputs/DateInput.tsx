@@ -17,13 +17,25 @@ interface IProps<TFieldValues extends FieldValues> {
   filterDate?: (date: Date) => boolean
 }
 
+/**
+Composant DateInput
+Un composant pour la saisie des dates, qui utilise le composant DatePicker de react-datepicker.
+@module DateInput
+@param {Object} props - Les propriétés du composant.
+@param {string} props.label - Le label pour le champ de saisie.
+@param {string} props.fieldName - Le nom du champ de saisie.
+@param {Object} props.control - L'objet control fourni par react-hook-form.
+@param {Object} props.errors - Les erreurs de validation fournies par react-hook-form.
+@param {Function} [props.filterDate] - La fonction pour filtrer les dates.
+@returns {JSX.Element} Le composant DateInput.
+*/
 function DateInput<TFieldValues extends FieldValues>({
   label,
   fieldName,
   control,
   errors,
   filterDate,
-}: IProps<TFieldValues>) {
+}: IProps<TFieldValues>): JSX.Element {
   return (
     <div>
       <label htmlFor={fieldName} className="block my-1">
