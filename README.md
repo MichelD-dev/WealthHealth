@@ -44,6 +44,10 @@ node --version
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=React-hook-form&message=v7.43.1&color=informational?style=for-the-badge&logo=react-hook-form)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Zod&message=v3.20.6&color=informational?style=for-the-badge&logo=zod)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Validator&message=v13.9.0&color=informational?style=for-the-badge&logo=validator)
+- ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=JsDoc&message=v4.0.2&color=informational?style=for-the-badge&logo=jsdoc)<br>
+  This project also use these personnal packages: <br>
+- ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=@midly/react-modal&message=v2.1.3&color=informational?style=for-the-badge&logo=@midly/react-modal)
+- ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=@midly/react-dropdown&message=v2.1.1&color=informational?style=for-the-badge&logo=@midly/react-dropdown)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -86,7 +90,12 @@ npm run dev
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 If the site is not launched automatically: open the browser at:
-http://localhost:5173/
+http://localhost:5173/ <br> You can sign in with the following credentials, or
+sign up with your own:
+
+- Email: `tony@stark.com`
+- Password: `password123`  
+  <br>
 
 You can generate documentation in JsDoc format with the command:
 
