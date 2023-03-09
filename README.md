@@ -12,8 +12,6 @@
 
 ## Pre-requisites
 
----
-
 HRnet uses the following technical stack:
 
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Node&message=>=14.0.0&color=informational?style=for-the-badge&logo=node)
@@ -31,8 +29,6 @@ node --version
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Dependencies
-
----
 
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Vite&message=v4.1.0&color=informational?style=for-the-badge&logo=vite)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=React&message=v18.2.0&color=informational?style=for-the-badge&logo=react)
@@ -53,8 +49,6 @@ node --version
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Installation
-
----
 
 1. Clone this repository (or download a zip file):
 
@@ -114,8 +108,6 @@ To view it, go to the `/docs` directory, then open `index.html` with live
 server.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
----
 
 ## Project Link:
 

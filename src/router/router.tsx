@@ -26,7 +26,7 @@ function RequireAuth({children}: {children: JSX.Element}): JSX.Element {
   const location = useLocation()
 
   // Si l'utilisateur n'est pas authentifié, rediriger vers la page de connexion
-  if (user === null) {
+  if (!user) {
     return <Navigate to="/" state={{from: location}} replace />
   }
 
