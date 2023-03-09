@@ -1,8 +1,16 @@
 import {z} from 'zod'
 
 const EmployeeWithoutAddressSchema = z.object({
-  firstname: z.string().trim().min(1, {message: 'First name is required'}),
-  lastname: z.string().trim().min(1, {message: 'Last name is required'}),
+  firstname: z
+    .string()
+    .trim()
+    .min(1, {message: 'First name is required'})
+    .transform(str => str.charAt(0).toUpperCase() + str.slice(1)),
+  lastname: z
+    .string()
+    .trim()
+    .min(1, {message: 'Last name is required'})
+    .transform(str => str.charAt(0).toUpperCase() + str.slice(1)),
   email: z.string().trim().min(1, {message: 'Email is required'}).email(),
   birthdate: z.date(),
   startdate: z.date(),
@@ -31,6 +39,7 @@ const AddressSchema = z.object({
     })
     .trim()
     .min(1, {message: 'City is required'})
+    .transform(str => str.charAt(0).toUpperCase() + str.slice(1))
     .nullable(),
   state: z.enum(['Alabama', 'Ohio', 'Montana']),
   zipcode: z
@@ -51,7 +60,11 @@ export const EmployeeSchema = z.discriminatedUnion('address', [
 ])
 
 export const employeeEditSchema = z.object({
-  lastname: z.string().trim().min(1, {message: 'Last name is required'}),
+  lastname: z
+    .string()
+    .trim()
+    .min(1, {message: 'Last name is required'})
+    .transform(str => str.charAt(0).toUpperCase() + str.slice(1)),
   department: z.enum([
     'Sales',
     'Marketing',
@@ -60,7 +73,11 @@ export const employeeEditSchema = z.object({
     'Legal',
   ]),
   street: z.string().trim().optional(),
-  city: z.string().trim().optional(),
+  city: z
+    .string()
+    .trim()
+    .transform(str => str.charAt(0).toUpperCase() + str.slice(1))
+    .optional(),
   state: z.enum(['Alabama', 'Ohio', 'Montana']),
   zipcode: z.string().trim().optional(),
 })

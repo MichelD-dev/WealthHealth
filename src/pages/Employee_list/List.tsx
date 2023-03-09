@@ -151,20 +151,12 @@ La fonction useMemo permet d'optimiser les performances en mémorisant les valeu
       columnHelper.accessor(row => row.firstname, {
         id: 'firstName',
         header: 'First Name',
-        cell: info => (
-          <p>
-            {info.getValue().charAt(0).toUpperCase() + info.getValue().slice(1)}
-          </p>
-        ),
+        cell: info => <p>{info.getValue()}</p>,
       }),
       columnHelper.accessor(row => row.lastname, {
         id: 'lastName',
         header: 'Last Name',
-        cell: info => (
-          <strong>
-            {info.getValue().charAt(0).toUpperCase() + info.getValue().slice(1)}
-          </strong>
-        ),
+        cell: info => <strong>{info.getValue()}</strong>,
       }),
       columnHelper.accessor('startdate', {
         header: 'Start Date',
