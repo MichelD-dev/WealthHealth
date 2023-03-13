@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import topLevelAwait from 'vite-plugin-top-level-await'
@@ -20,4 +22,9 @@ export default defineConfig({
       promiseImportName: i => `__tla_${i}`,
     }),
   ],
+  test: {
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: ['./setup.ts'],
+  },
 })
