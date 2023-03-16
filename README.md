@@ -41,8 +41,8 @@ node --version
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Zod&message=v3.20.6&color=informational?style=for-the-badge&logo=zod)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Validator&message=v13.9.0&color=informational?style=for-the-badge&logo=validator)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=JsDoc&message=v4.0.2&color=informational?style=for-the-badge&logo=jsdoc)
-- ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=Focus-trap-react&message=v10.1.0&color=informational?style=for-the-badge&logo=focus-trap-react)<br>
-  This project also use these personnal packages: <br>
+
+  This project also use these personal packages: <br>
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=@midly/react-modal&message=v2.1.3&color=informational?style=for-the-badge&logo=@midly/react-modal)
 - ![GitHub package.json dependency version (prod)](https://img.shields.io/static/v1?label=@midly/react-dropdown&message=v2.1.1&color=informational?style=for-the-badge&logo=@midly/react-dropdown)
 
